@@ -37,11 +37,11 @@ function Company() {
 
   return (
     <Fragment>
-      <div className="company my-3 flex flex-col sm:flex-row gap-5 bg-white rounded shadow">
+      <div className="company my-3 flex flex-col sm:flex-row gap-5 bg-white rounded shadow items-center sm:items-start p-4">
         <img
           src={`${IMAGE_BASE_URL}${company.image}`}
           alt={company.name}
-          className="rounded w-full md:w-[225px] shadow"
+          className="rounded w-1/2 md:w-[225px] shadow"
         />
 
         <h1 className="text-2xl font-bold mt-3 text-primary text-center">
