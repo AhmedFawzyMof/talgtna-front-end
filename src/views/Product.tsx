@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useCartStore } from "../store/CartStore";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/AuthStore";
-import { BASE_URL } from "../store/config";
+import { BASE_URL, IMAGE_BASE_URL } from "../store/config";
 
 interface Product {
   id: number;
@@ -71,7 +71,7 @@ function ProductView() {
 
   const product: Product = data?.product ?? {};
 
-  document.title = `Talgtna | ${product.name}`;
+  document.title = `EasyCookFrozen | ${product.name}`;
   const CartProduct = {
     id: product.id,
     quantity: quantity,
@@ -133,7 +133,7 @@ function ProductView() {
           className="grid place-items-center w-full row-start-1 md:col-start-2"
         >
           <img
-            src={`https://talgtna-backend.onrender.com${product.image}`}
+            src={`${IMAGE_BASE_URL}${product.image}`}
             alt={product.name}
             className="w-full md:w-[398px] rounded shadow"
           />

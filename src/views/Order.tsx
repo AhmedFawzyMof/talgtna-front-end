@@ -28,7 +28,7 @@ function Order() {
   const discountValue: number = discount.value as number;
   const totalDiscount: number = total - discountValue;
 
-  document.title = "Talgtna | الطلب";
+  document.title = "EasyCookFrozen | الطلب";
 
   const mutation = useMutation(
     async (data: unknown) => {

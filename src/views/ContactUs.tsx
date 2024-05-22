@@ -10,7 +10,7 @@ function ContactUs() {
   const [message, setMessage] = useState("");
 
   const mutation = useMutation(
-    (document.title = "Talgtna | تواصل معنا"),
+    (document.title = "EasyCookFrozen | تواصل معنا"),
     async (data: unknown) => {
       const response = await fetch(`${BASE_URL}/contact`, {
         method: "POST",

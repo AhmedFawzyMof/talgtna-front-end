@@ -8,7 +8,7 @@ export default {
         base: ["Cairo", "sans-serif"],
       },
       colors: {
-        primary: "#ec8812",
+        primary: "#30c6eb",
       },
     },
   },

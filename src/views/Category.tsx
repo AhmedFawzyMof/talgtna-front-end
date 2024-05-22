@@ -39,7 +39,7 @@ function Category() {
     enabled: false,
   });
 
-  document.title = `Talgtna | ${name}`;
+  document.title = `EasyCookFrozen | ${name}`;
 
   useEffect(() => {
     refetch();

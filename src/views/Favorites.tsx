@@ -35,7 +35,7 @@ function Favorites() {
     }).then((res) => res.json())
   );
 
-  document.title = "Talgtna | المفضلات";
+  document.title = "EasyCookFrozen | المفضلات";
 
   const products: Product[] = data?.products ?? [];
   console.log(products);

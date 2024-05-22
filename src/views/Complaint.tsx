@@ -1,5 +1,5 @@
 function Complaint() {
-  document.title = "Talgtna | الشكوي";
+  document.title = "EasyCookFrozen | الشكوي";
 
   return (
     <div className="my-10 mx-auto rounded-md shadow-md w-[95%] md:w-[80%] h-screen flex flex-col items-center justify-center gap-5 bg-white">

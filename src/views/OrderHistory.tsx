@@ -35,7 +35,7 @@ function OrderHistory() {
     navigate("/");
   }
 
-  const { isLoading, error, data } = useQuery("favorites", () =>
+  const { isLoading, error, data } = useQuery("history", () =>
     fetch(`${BASE_URL}/order/history`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ function OrderHistory() {
   if (isLoading) return <p>Loading...</p>;
 
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
-  document.title = `Talgtna | سجل الطلبات`;
+  document.title = `EasyCookFrozen | سجل الطلبات`;
 
   if (data?.orders.length == 0) {
     return (

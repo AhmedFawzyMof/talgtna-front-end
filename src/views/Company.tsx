@@ -2,7 +2,7 @@ import { Fragment } from "react/jsx-runtime";
 import { useParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import ProductCard from "../components/Product";
-import { BASE_URL } from "../store/config";
+import { BASE_URL, IMAGE_BASE_URL } from "../store/config";
 
 interface Company {
   id: number;
@@ -26,7 +26,7 @@ function Company() {
   const { isLoading, error, data } = useQuery("company", () =>
     fetch(`${BASE_URL}/company/${name}`).then((res) => res.json())
   );
-  document.title = `Talgtna | ${name}`;
+  document.title = `EasyCookFrozen | ${name}`;
 
   if (isLoading) return <p>Loading...</p>;
 
@@ -39,7 +39,7 @@ function Company() {
     <Fragment>
       <div className="company my-3 flex flex-col sm:flex-row gap-5 bg-white rounded shadow">
         <img
-          src={`https://talgtna-backend.onrender.com${company.image}`}
+          src={`${IMAGE_BASE_URL}${company.image}`}
           alt={company.name}
           className="rounded w-full md:w-[225px] shadow"
         />

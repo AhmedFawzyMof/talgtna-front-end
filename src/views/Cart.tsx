@@ -12,7 +12,7 @@ function Cart() {
   const total = subtotal + 25;
   const discountValue: number = discount.value as number;
   const totalDiscount: number = total - discountValue;
-  document.title = "Talgtna | السلة";
+  document.title = "EasyCookFrozen | السلة";
 
   useEffect(() => {
     setSubtotal(
