@@ -20,7 +20,7 @@ function Cart() {
     );
   }, [cart, totalQuantity]);
   return (
-    <div className="container">
+    <>
       <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 bg-white my-4 rounded shadow-lg">
         <div
           id="EmptyCart"
@@ -102,7 +102,7 @@ function Cart() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

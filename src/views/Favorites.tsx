@@ -43,13 +43,13 @@ function Favorites() {
 
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
   return (
-    <div className="container">
+    <>
       <div className="products my-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-5">
         {products.map((product: Product) => (
           <ProductCard key={product.id} product={product} isFavorite={true} />
         ))}
       </div>
-    </div>
+    </>
   );
 }
 

@@ -37,7 +37,7 @@ function Home() {
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
 
   return (
-    <div className="container">
+    <>
       <CarouselComponent offers={offers} />
       <main>
         <div className="w-full overflow-x-scroll grid place-items-center">
@@ -53,7 +53,7 @@ function Home() {
           ))}
         </div>
       </main>
-    </div>
+    </>
   );
 }
 

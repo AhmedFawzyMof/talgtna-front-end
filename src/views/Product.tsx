@@ -81,7 +81,7 @@ function ProductView() {
   };
 
   return (
-    <div className="container">
+    <>
       <div className="grid place-items-center ">
         <div
           key={product.id}
@@ -141,7 +141,7 @@ function ProductView() {
           </section>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
