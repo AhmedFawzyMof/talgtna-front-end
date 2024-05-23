@@ -43,10 +43,12 @@ function Coupons() {
   const coupons = data?.coupons;
 
   return (
-    <div className="w-full h-screen grid place-items-center my-5">
-      {coupons?.map((coupon: Coupon) => (
-        <Coupon coupon={coupon} />
-      ))}
+    <div className="container">
+      <div className="w-full h-screen grid place-items-center my-5">
+        {coupons?.map((coupon: Coupon) => (
+          <Coupon coupon={coupon} />
+        ))}
+      </div>
     </div>
   );
 }

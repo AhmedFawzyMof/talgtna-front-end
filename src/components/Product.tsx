@@ -117,7 +117,7 @@ function ProductCard({
         <div className="mt-2">
           <dl>
             {product.offer > 0 ? (
-              <>
+              <div className="container">
                 <div>
                   <dt className="sr-only">Price</dt>
 
@@ -132,7 +132,7 @@ function ProductCard({
                     {product.price} ج
                   </dd>
                 </div>
-              </>
+              </div>
             ) : (
               <div>
                 <dt className="sr-only">Price</dt>

@@ -1,4 +1,3 @@
-import { Fragment } from "react/jsx-runtime";
 import { useParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import ProductCard from "../components/Product";
@@ -36,7 +35,7 @@ function Company() {
   const products: Product[] = data?.products ?? [];
 
   return (
-    <Fragment>
+    <div className="container">
       <div className="company my-3 flex flex-col sm:flex-row gap-5 bg-white rounded shadow items-center sm:items-start p-4">
         <img
           src={`${IMAGE_BASE_URL}${company.image}`}
@@ -53,7 +52,7 @@ function Company() {
           <ProductCard key={product.id} product={product} isFavorite={false} />
         ))}
       </div>
-    </Fragment>
+    </div>
   );
 }
 

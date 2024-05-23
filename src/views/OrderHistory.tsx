@@ -59,10 +59,12 @@ function OrderHistory() {
     );
   }
   return (
-    <div className="w-full h-auto grid place-items-center my-7 gap-5">
-      {data?.orders.map((order: Order) => (
-        <OrderCard key={order.id} order={order} />
-      ))}
+    <div className="container">
+      <div className="w-full h-auto grid place-items-center my-7 gap-5">
+        {data?.orders.map((order: Order) => (
+          <OrderCard key={order.id} order={order} />
+        ))}
+      </div>
     </div>
   );
 }

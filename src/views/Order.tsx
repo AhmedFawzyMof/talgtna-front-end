@@ -111,7 +111,7 @@ function Order() {
   };
 
   return (
-    <>
+    <div className="container">
       <section className="grid place-items-center py-7">
         <div
           id="checkout"
@@ -325,7 +325,7 @@ function Order() {
           </form>
         </div>
       </section>
-    </>
+    </div>
   );
 }
 

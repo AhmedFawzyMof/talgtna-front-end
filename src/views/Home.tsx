@@ -1,4 +1,3 @@
-import { Fragment } from "react/jsx-runtime";
 import { useQuery } from "react-query";
 import CarouselComponent from "../components/Carousel";
 import CategoryButton from "../components/CategoryButton";
@@ -38,21 +37,23 @@ function Home() {
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
 
   return (
-    <Fragment>
+    <div className="container">
       <CarouselComponent offers={offers} />
-      <div className="w-full overflow-x-scroll grid place-items-center">
-        <div className="categories w-full flex items-center gap-2 md:gap-5 px-2 md:px-5 my-3 justify-center">
-          {categories.map((category: Category) => (
-            <CategoryButton key={category.id} {...category} />
+      <main>
+        <div className="w-full overflow-x-scroll grid place-items-center">
+          <div className="categories w-full flex items-center gap-2 md:gap-5 px-2 md:px-5 my-3 justify-center">
+            {categories.map((category: Category) => (
+              <CategoryButton key={category.id} {...category} />
+            ))}
+          </div>
+        </div>
+        <div className="companies my-6 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-5 px-2 md:px-5 place-items-center">
+          {companies.map((company: Company) => (
+            <CompanyDiv key={company.id} {...company} />
           ))}
         </div>
-      </div>
-      <div className="companies my-6 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-5 px-2 md:px-5 place-items-center">
-        {companies.map((company: Company) => (
-          <CompanyDiv key={company.id} {...company} />
-        ))}
-      </div>
-    </Fragment>
+      </main>
+    </div>
   );
 }
 

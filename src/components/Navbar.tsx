@@ -19,7 +19,11 @@ function Navbar() {
         <button id="menuBtn" onClick={() => setIsActive(!isActive)}>
           <i className="bx bx-menu text-3xl"></i>
         </button>
-        <Link to="/cart" className="cart relative">
+        <Link
+          onClick={() => setIsActive(false)}
+          to="/cart"
+          className="cart relative"
+        >
           <span
             id="cartQuantity"
             className={`${
@@ -32,7 +36,11 @@ function Navbar() {
           <p className="text-3xl sr-only">سلة الشراء</p>
         </Link>
         {isAuth ? (
-          <Link to="/favorites" className="login">
+          <Link
+            onClick={() => setIsActive(false)}
+            to="/favorites"
+            className="login"
+          >
             <i className="bx bx-heart text-3xl"></i>
             <p className="text-3xl sr-only">المفضلة</p>
           </Link>
@@ -53,7 +61,7 @@ function Navbar() {
         </button>
       </form>
       <div className="thirdSection">
-        <Link to="/" className="logo">
+        <Link onClick={() => setIsActive(false)} to="/" className="logo">
           <img src={logoImg} alt="logo" className="w-12" />
         </Link>
       </div>
@@ -65,6 +73,7 @@ function Navbar() {
       >
         {isAuth ? (
           <Link
+            onClick={() => setIsActive(false)}
             to="/coupons"
             className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
           >
@@ -72,6 +81,7 @@ function Navbar() {
           </Link>
         ) : null}
         <Link
+          onClick={() => setIsActive(false)}
           to="/"
           className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
         >
@@ -79,6 +89,7 @@ function Navbar() {
         </Link>
         {isAuth ? (
           <Link
+            onClick={() => setIsActive(false)}
             to="/order/history"
             className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
           >
@@ -86,18 +97,21 @@ function Navbar() {
           </Link>
         ) : null}
         <Link
+          onClick={() => setIsActive(false)}
           to="/contact"
           className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
         >
           أتصل بنا
         </Link>
         <Link
+          onClick={() => setIsActive(false)}
           to="/about"
           className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
         >
           معلومات عنا
         </Link>
         <Link
+          onClick={() => setIsActive(false)}
           to="/complaint"
           className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
         >

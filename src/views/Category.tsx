@@ -1,4 +1,3 @@
-import { Fragment } from "react/jsx-runtime";
 import { useQuery } from "react-query";
 import CarouselComponent from "../components/Carousel";
 import CategoryButton from "../components/CategoryButton";
@@ -54,7 +53,7 @@ function Category() {
   const products: Product[] = data?.products ?? [];
 
   return (
-    <Fragment>
+    <div className="container">
       <CarouselComponent offers={offers} />
       <div className="w-full overflow-x-scroll grid place-items-center">
         <div className="categories w-full flex items-center gap-2 md:gap-5 px-2 md:px-5 my-3 justify-center">
@@ -68,7 +67,7 @@ function Category() {
           <ProductCard key={product.id} product={product} isFavorite={false} />
         ))}
       </div>
-    </Fragment>
+    </div>
   );
 }
 
