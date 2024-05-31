@@ -5,113 +5,120 @@ import { useCartStore } from "../store/CartStore";
 import { useAuthStore } from "../store/AuthStore";
 
 function Navbar() {
+  const [isActive, setIsActive] = useState(false);
   const isAuth = useAuthStore((state) => state.isAuthenticated);
   const totalQuantity = useCartStore((state) => state.getTotalQuantity());
 
-  const [open, setOpen] = useState(false);
-
-  function IsOpen() {
-    setOpen(!open);
-  }
-
-  const menuClassNclassName =
-    "fixed inset-y-0 left-0 z-10 w-60 overflow-hidden duration-300 bg-white rounded-r-lg shadow-lg lg:static lg:shadow-none lg:bg-transparent lg:overflow-visible lg:w-auto lg:pt-0 lg:border-0 transition-all transform lg:-translate-x-0";
-
   return (
-    <header className="h-14 bg-white py-1 px-1 shadow-md flex items-center justify-between overflow-hidden">
-      <div className="flex items-center gap-2">
-        <button onClick={IsOpen}>
-          <i className="bx bx-menu-alt-right text-3xl"></i>
+    <nav className="relative h-14 w-full bg-white shadow-sm flex items-center justify-between px-2 md:px-6 gap-5">
+      <div
+        className={`firstSection flex ${
+          isAuth ? "gap-2" : "gap-2"
+        } h-full items-center`}
+      >
+        <button id="menuBtn" onClick={() => setIsActive(!isActive)}>
+          <i className="bx bx-menu text-3xl"></i>
         </button>
         <Link
+          onClick={() => setIsActive(false)}
           to="/cart"
-          className="duration-300 hover:text-primary-600 relative"
+          className="cart relative"
         >
-          <span className="sr-only">العربة</span>
-          {totalQuantity > 0 && (
-            <span className="absolute -top-2 -right-2 bg-primary-600 px-2 rounded-md text-white">
-              {totalQuantity}
-            </span>
-          )}
+          <span
+            id="cartQuantity"
+            className={`${
+              totalQuantity > 0 ? "block" : "hidden"
+            } absolute bg-primary text-white p-1 rounded -top-2 -right-2`}
+          >
+            {totalQuantity}
+          </span>
           <i className="bx bx-cart-alt text-3xl"></i>
+          <p className="text-3xl sr-only">سلة الشراء</p>
         </Link>
-        <form className="search rounded-md shadow bg-gray-50 text-primary-600 flex items-center px-2">
-          <button type="submit" className="cursor-pointer">
-            <i className="bx bx-search text-3xl"></i>
-          </button>
-          <input
-            type="search"
-            name="search"
-            placeholder="ابحث عن منتجاتك ..."
-            className="border-gray-50 bg-gray-50 w-full"
-          />
-        </form>
+        {isAuth ? (
+          <Link
+            onClick={() => setIsActive(false)}
+            to="/favorites"
+            className="login"
+          >
+            <i className="bx bx-heart text-3xl"></i>
+            <p className="text-3xl sr-only">المفضلة</p>
+          </Link>
+        ) : null}
       </div>
-      <ul
-        className={
-          open
-            ? `${menuClassNclassName} translate-x-0`
-            : `${menuClassNclassName} translate-x-full`
-        }
-      >
-        <li className="link h-10 w-full flex items-center justify-start duration-300 hover:bg-primary-600 hover:pr-1 rounded-md hover:text-white">
-          <Link
-            to="/"
-            className="w-full h-full flex items-center"
-            onClick={IsOpen}
-          >
-            الرئيسية
-          </Link>
-        </li>
-        <li className="link h-10 w-full flex items-center justify-start duration-300 hover:bg-primary-600 hover:pr-1 rounded-md hover:text-white">
-          <Link
-            to="/contact"
-            className="w-full h-full flex items-center"
-            onClick={IsOpen}
-          >
-            تواصل معنا
-          </Link>
-        </li>
-        <li className="link h-10 w-full flex items-center justify-start duration-300 hover:bg-primary-600 hover:pr-1 rounded-md hover:text-white">
-          <Link
-            to="/about"
-            className="w-full h-full flex items-center"
-            onClick={IsOpen}
-          >
-            من نحن
-          </Link>
-        </li>
-        {isAuth && (
-          <>
-            <li>
-              <Link
-                onClick={IsOpen}
-                to="/coupons"
-                className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
-              >
-                قسائم الخصم
-              </Link>
-            </li>
-            <li>
-              <Link
-                onClick={IsOpen}
-                to="/order/history"
-                className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
-              >
-                سجل الطلبات
-              </Link>
-            </li>
-          </>
-        )}
-      </ul>
-      <Link to="/">
-        <img
-          src={logoImg}
-          alt="Easy Cook Frozen Logo"
-          className="w-16 md:w-32"
+      <form action="/search" className="relative w-[60%]">
+        <input
+          type="search"
+          name="query"
+          placeholder="ابحث عن منتجاتك ..."
+          className="w-full h-full border border-primary rounded-md px-3 py-1"
         />
-      </Link>
-    </header>
+        <button
+          type="submit"
+          className="absolute bg-primary top-1/2 -translate-y-1/2 w-11 left-0 h-full rounded-l-md"
+        >
+          <i className="bx bx-search text-3xl text-white"></i>
+        </button>
+      </form>
+      <div className="thirdSection">
+        <Link onClick={() => setIsActive(false)} to="/" className="logo">
+          <img src={logoImg} alt="logo" className="w-12" />
+        </Link>
+      </div>
+
+      <div
+        className={`menu absolute bg-white h-[90vh] w-[250px] top-[105%] rounded shadow-xl z-50 right-0 flex flex-col gap-4 p-4 duration-300 transition-all ${
+          isActive ? "translate-x-0" : " translate-x-[250px]"
+        }`}
+      >
+        {isAuth ? (
+          <Link
+            onClick={() => setIsActive(false)}
+            to="/coupons"
+            className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
+          >
+            القسائم
+          </Link>
+        ) : null}
+        <Link
+          onClick={() => setIsActive(false)}
+          to="/"
+          className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
+        >
+          الصفحة الرئيسية
+        </Link>
+        {isAuth ? (
+          <Link
+            onClick={() => setIsActive(false)}
+            to="/order/history"
+            className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
+          >
+            سجل الطلبات
+          </Link>
+        ) : null}
+        <Link
+          onClick={() => setIsActive(false)}
+          to="/contact"
+          className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
+        >
+          أتصل بنا
+        </Link>
+        <Link
+          onClick={() => setIsActive(false)}
+          to="/about"
+          className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
+        >
+          معلومات عنا
+        </Link>
+        <Link
+          onClick={() => setIsActive(false)}
+          to="/complaint"
+          className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
+        >
+          الشكوي
+        </Link>
+      </div>
+    </nav>
   );
 }
 
