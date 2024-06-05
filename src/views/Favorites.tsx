@@ -38,7 +38,6 @@ function Favorites() {
   document.title = "EasyCookFrozen | المفضلات";
 
   const products: Product[] = data?.products ?? [];
-  console.log(products);
   if (isLoading) return <p>Loading...</p>;
 
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
@@ -46,7 +45,12 @@ function Favorites() {
     <>
       <div className="products my-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-5">
         {products.map((product: Product) => (
-          <ProductCard key={product.id} product={product} isFavorite={true} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            isFavorite={true}
+            isAuthenticated={isAuth}
+          />
         ))}
       </div>
     </>
