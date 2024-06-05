@@ -5,6 +5,7 @@ import { useAuthStore } from "../store/AuthStore";
 import { useMutation } from "react-query";
 import { toast } from "sonner";
 import { BASE_URL, IMAGE_BASE_URL } from "../store/config";
+import { FaCartPlus, FaPlus, FaMinus, FaHeart } from "react-icons/fa6";
 
 interface Product {
   id: number;
@@ -21,11 +22,13 @@ interface Product {
 function ProductCard({
   product,
   isFavorite,
+  isAuthenticated,
 }: {
   product: Product;
   isFavorite: boolean;
+  isAuthenticated: boolean;
 }) {
-  const isAuth = useAuthStore((state) => state.isAuthenticated);
+  const isAuth = isAuthenticated;
   const token = useAuthStore((state) => state.token);
   const cart = useCartStore((state) => state.cart);
   const [isInCart, setInCart] = useState(false);
@@ -104,7 +107,7 @@ function ProductCard({
   return (
     <div
       key={product.id}
-      className="block rounded-lg p-4 shadow-lg bg-white shadow-orange-100 relative"
+      className="block rounded-lg p-4 shadow-lg bg-white relative"
     >
       <Link to={`/products/${product.id}`}>
         <img
@@ -156,7 +159,7 @@ function ProductCard({
             isInCart ? "hidden" : "flex"
           } bg-white p-2 rounded shadow z-50x`}
         >
-          <i className="bx bx-cart-add"></i>
+          <FaCartPlus />
         </button>
         <div
           className={`inCart ${
@@ -167,14 +170,14 @@ function ProductCard({
             onClick={handelIncrement}
             className="text-lg border border-primary rounded-lg cursor-pointer grid place-items-center w-full h-8"
           >
-            <i className="bx bx-plus"></i>
+            <FaPlus />
           </button>
           <p className="Quantity text-lg">{quantity}</p>
           <button
             onClick={handelDecrement}
             className="text-lg border border-primary rounded-lg cursor-pointer grid place-items-center w-full h-8"
           >
-            <i className="bx bx-minus"></i>
+            <FaMinus />
           </button>
         </div>
         {isAuth && !isFavorite ? (
@@ -183,7 +186,7 @@ function ProductCard({
             id="addToFav"
             className="bg-white p-2 rounded shadow"
           >
-            <i className="bx bxs-heart"></i>
+            <FaHeart />
           </button>
         ) : null}
       </div>

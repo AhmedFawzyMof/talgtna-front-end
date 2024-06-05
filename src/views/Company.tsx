@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import ProductCard from "../components/Product";
 import { BASE_URL, IMAGE_BASE_URL } from "../store/config";
+import { useAuthStore } from "../store/AuthStore";
 
 interface Company {
   id: number;
@@ -21,6 +22,7 @@ interface Product {
   available: number;
 }
 function Company() {
+  const isAuth = useAuthStore((state) => state.isAuthenticated);
   const { name } = useParams<{ name: string }>();
   const { isLoading, error, data } = useQuery("company", () =>
     fetch(`${BASE_URL}/company/${name}`).then((res) => res.json())
@@ -49,7 +51,12 @@ function Company() {
       </div>
       <div className="products grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-5">
         {products.map((product: Product) => (
-          <ProductCard key={product.id} product={product} isFavorite={false} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            isFavorite={false}
+            isAuthenticated={isAuth}
+          />
         ))}
       </div>
     </>

@@ -21,6 +21,7 @@ import { useAuthStore } from "./store/AuthStore";
 import { useCartStore } from "./store/CartStore";
 
 import { Toaster } from "sonner";
+import Search from "./views/Search";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +29,9 @@ function Layout() {
   return (
     <>
       <Navbar />
-      <Outlet />
+      <div className=" max-w-screen-2xl mx-auto xl:px-8">
+        <Outlet />
+      </div>
     </>
   );
 }
@@ -89,6 +92,10 @@ const router = createBrowserRouter([
       {
         path: "cart",
         element: <Cart />,
+      },
+      {
+        path: "/search",
+        element: <Search />,
       },
     ],
   },

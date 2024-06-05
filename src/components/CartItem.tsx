@@ -1,5 +1,7 @@
+import { Link } from "react-router-dom";
 import { useCartStore } from "../store/CartStore";
 import { IMAGE_BASE_URL } from "../store/config";
+import { FaRegTrashAlt, FaPlus, FaMinus } from "react-icons/fa";
 
 interface CartProduct {
   id: number;
@@ -14,58 +16,76 @@ function CartItem({ product }: { product: CartProduct }) {
   const decrementQuantity = useCartStore((state) => state.decrementQuantity);
 
   return (
-    <>
-      <li className="flex items-center gap-4" id="cartItem">
-        <img
-          id="itemImage"
-          src={IMAGE_BASE_URL + product.image}
-          alt={product.name}
-          className="w-16 h-16 rounded object-cover"
-        />
+    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+      <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
+        <Link to={`/product/${product.id}`} className="shrink-0 md:order-1">
+          <img
+            className="h-20 w-20"
+            src={IMAGE_BASE_URL + product.image}
+            alt={product.name}
+          />
+        </Link>
 
-        <div>
-          <h3 className="text-sm text-gray-900" id="itemName">
-            {product.name.length > 35
-              ? product.name.slice(0, 35) + "..."
-              : product.name}
-          </h3>
-        </div>
-
-        <div className="flex flex-1 items-center justify-end gap-2">
-          <div className="buttons flex flex-col md:flex-row border border-primary w-11 md:w-32 items-center justify-between h-auto md:h-9 rounded gap-2 md:gap-5">
+        <label htmlFor="counter-input" className="sr-only">
+          اختر الكمية:
+        </label>
+        <div className="flex items-center justify-between md:order-3 md:justify-end">
+          <div className="flex items-center">
             <button
-              onClick={() => {
-                incrementQuantity(product.id);
-              }}
-              id="incQuantityBtn"
-              className="w-full text-xl grid place-items-center cursor-pointer h-full duration-300 hover:bg-primary hover:text-white transition ease-in-out"
+              type="button"
+              onClick={() => decrementQuantity(product.id)}
+              id="decrement-button-4"
+              data-input-counter-decrement="counter-input-4"
+              className="inline-flex  h-8 w-8 shrink-0 items-center justify-center rounded-md border border-primary-300 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
             >
-              <i className="bx bx-plus"></i>
+              <FaMinus />
             </button>
-            <p className="Quantity text-lg">{product.quantity}</p>
+            <input
+              type="text"
+              id="counter-input-4"
+              data-input-counter
+              className="w-10 shrink-0 border-0 bg-transparent text-center text-md font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
+              placeholder=""
+              value={product.quantity}
+              required
+            />
             <button
-              onClick={() => {
-                decrementQuantity(product.id);
-              }}
-              id="decQuantityBtn"
-              className="w-full text-xl grid place-items-center cursor-pointer h-full duration-300 hover:bg-primary hover:text-white transition ease-in-out"
+              type="button"
+              onClick={() => incrementQuantity(product.id)}
+              id="increment-button-4"
+              data-input-counter-increment="counter-input-4"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border  border-primary-300 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
             >
-              <i className="bx bx-minus"></i>
+              <FaPlus />
             </button>
           </div>
-          <button
-            onClick={() => {
-              removeFromCart(product.id);
-            }}
-            id="removeFromCart"
-            className="text-gray-600 border border-primary grid place-items-center rounded px-3 h-9 transition hover:text-red-600"
-          >
-            <span className="sr-only">Remove item</span>
-            <i className="bx bx-trash"></i>
-          </button>
+          <div className="text-end md:order-4 md:w-32">
+            <p className="text-base font-bold text-gray-900 dark:text-white">
+              {product.price} ج
+            </p>
+          </div>
         </div>
-      </li>
-    </>
+
+        <div className="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
+          <a
+            href="#"
+            className="text-base font-medium text-gray-900 hover:underline dark:text-white"
+          >
+            {product.name}
+          </a>
+
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => removeFromCart(product.id)}
+              className="inline-flex items-center text-sm font-medium text-red-600 hover:underline dark:text-red-500"
+            >
+              <FaRegTrashAlt /> &nbsp; Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

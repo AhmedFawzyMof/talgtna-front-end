@@ -1,8 +1,8 @@
 import { useQuery } from "react-query";
 import CarouselComponent from "../components/Carousel";
-import CategoryButton from "../components/CategoryButton";
 import CompanyDiv from "../components/CompanyDiv";
 import { BASE_URL } from "../store/config";
+import { Button } from "flowbite-react";
 
 interface Category {
   id: number;
@@ -43,7 +43,13 @@ function Home() {
         <div className="w-full overflow-x-scroll grid place-items-center">
           <div className="categories w-full flex items-center gap-2 md:gap-5 px-2 md:px-5 my-3 justify-center">
             {categories.map((category: Category) => (
-              <CategoryButton key={category.id} {...category} />
+              <Button
+                href={`/category/${category.name}`}
+                key={category.id}
+                className="bg-primary text-nowrap shadow-md"
+              >
+                {category.name}
+              </Button>
             ))}
           </div>
         </div>

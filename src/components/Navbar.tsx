@@ -3,36 +3,39 @@ import logoImg from "../assets/logo.png";
 import { useState } from "react";
 import { useCartStore } from "../store/CartStore";
 import { useAuthStore } from "../store/AuthStore";
+import { IoIosCart, IoIosMenu, IoIosHeart, IoIosSearch } from "react-icons/io";
+import { Badge } from "flowbite-react";
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
   const [isActive, setIsActive] = useState(false);
+  const [isSearchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const isAuth = useAuthStore((state) => state.isAuthenticated);
   const totalQuantity = useCartStore((state) => state.getTotalQuantity());
+  const navigate = useNavigate();
+
+  const handelSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!query) return;
+    setSearchOpen(false);
+    setQuery("");
+    navigate(`/search?query=${query}`);
+  };
 
   return (
     <nav className="relative h-14 w-full bg-white shadow-sm flex items-center justify-between px-2 md:px-6 gap-5">
-      <div
-        className={`firstSection flex ${
-          isAuth ? "gap-2" : "gap-2"
-        } h-full items-center`}
-      >
+      <div className="flex items-center gap-2 md:gap-5">
         <button id="menuBtn" onClick={() => setIsActive(!isActive)}>
-          <i className="bx bx-menu text-3xl"></i>
+          <IoIosMenu className="text-3xl" />
         </button>
         <Link
           onClick={() => setIsActive(false)}
           to="/cart"
           className="cart relative"
         >
-          <span
-            id="cartQuantity"
-            className={`${
-              totalQuantity > 0 ? "block" : "hidden"
-            } absolute bg-primary text-white p-1 rounded -top-2 -right-2`}
-          >
-            {totalQuantity}
-          </span>
-          <i className="bx bx-cart-alt text-3xl"></i>
+          <Badge className="absolute -top-2 -right-2">{totalQuantity}</Badge>
+          <IoIosCart className="text-3xl" />
           <p className="text-3xl sr-only">سلة الشراء</p>
         </Link>
         {isAuth ? (
@@ -41,30 +44,41 @@ function Navbar() {
             to="/favorites"
             className="login"
           >
-            <i className="bx bx-heart text-3xl"></i>
+            <IoIosHeart className="text-3xl" />
             <p className="text-3xl sr-only">المفضلة</p>
           </Link>
         ) : null}
-      </div>
-      <form action="/search" className="relative w-[60%]">
-        <input
-          type="search"
-          name="query"
-          placeholder="ابحث عن منتجاتك ..."
-          className="w-full h-full border border-primary rounded-md px-3 py-1"
-        />
         <button
-          type="submit"
-          className="absolute bg-primary top-1/2 -translate-y-1/2 w-11 left-0 h-full rounded-l-md"
+          id="searchBtn"
+          className="md:hidden"
+          onClick={() => setSearchOpen(!isSearchOpen)}
         >
-          <i className="bx bx-search text-3xl text-white"></i>
+          <IoIosSearch className="text-3xl" />
         </button>
-      </form>
-      <div className="thirdSection">
-        <Link onClick={() => setIsActive(false)} to="/" className="logo">
-          <img src={logoImg} alt="logo" className="w-12" />
-        </Link>
+        <form
+          action="/search"
+          className="hidden md:block relative w-[60%]"
+          onSubmit={(e) => handelSubmit(e)}
+        >
+          <input
+            type="search"
+            name="query"
+            placeholder="ابحث عن منتجاتك ..."
+            className="w-full h-full border border-primary rounded-md px-3 py-1"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="absolute bg-primary top-1/2 -translate-y-1/2 w-11 left-0 h-full rounded-l-md flex items-center justify-center"
+          >
+            <IoIosSearch className="text-3xl text-white text-center" />
+          </button>
+        </form>
       </div>
+      <Link onClick={() => setIsActive(false)} to="/" className="logo h-full">
+        <img src={logoImg} alt="logo" className=" w-30 h-full" />
+      </Link>
 
       <div
         className={`menu absolute bg-white h-[90vh] w-[250px] top-[105%] rounded shadow-xl z-50 right-0 flex flex-col gap-4 p-4 duration-300 transition-all ${
@@ -117,6 +131,34 @@ function Navbar() {
         >
           الشكوي
         </Link>
+      </div>
+      <div
+        className={`h-14 bg-white duration-300 w-full absolute ${
+          isSearchOpen ? "z-10" : "-z-10"
+        } left-0 top-[56px] shadow-md grid place-items-center ${
+          isSearchOpen ? "translate-y-0" : "translate-y-[-100%]"
+        }`}
+      >
+        <form
+          action="/search"
+          className="relative w-full"
+          onSubmit={(e) => handelSubmit(e)}
+        >
+          <input
+            type="search"
+            name="query"
+            placeholder="ابحث عن منتجاتك ..."
+            className="w-full h-full border border-primary rounded-md px-3 py-1"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <button
+            type="submit"
+            className="absolute bg-primary top-1/2 -translate-y-1/2 w-11 left-0 h-full rounded-l-md flex items-center justify-center"
+          >
+            <IoIosSearch className="text-3xl text-white text-center" />
+          </button>
+        </form>
       </div>
     </nav>
   );

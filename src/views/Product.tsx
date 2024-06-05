@@ -4,6 +4,7 @@ import { useCartStore } from "../store/CartStore";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/AuthStore";
 import { BASE_URL, IMAGE_BASE_URL } from "../store/config";
+import { FaRegHeart, FaPlus, FaMinus } from "react-icons/fa";
 
 interface Product {
   id: number;
@@ -72,6 +73,7 @@ function ProductView() {
   const product: Product = data?.product ?? {};
 
   document.title = `EasyCookFrozen | ${product.name}`;
+
   const CartProduct = {
     id: product.id,
     quantity: quantity,
@@ -106,14 +108,14 @@ function ProductView() {
                   onClick={handelIncrement}
                   className="w-full text-xl grid place-items-center cursor-pointer h-full duration-300 hover:bg-primary hover:text-white transition ease-in-out"
                 >
-                  <i className="bx bx-plus"></i>
+                  <FaPlus />
                 </button>
                 <p className="Quantity">{quantity}</p>
                 <button
                   onClick={handelDecrement}
                   className="w-full text-xl grid place-items-center cursor-pointer h-full duration-300 hover:bg-primary hover:text-white transition ease-in-out"
                 >
-                  <i className="bx bx-minus"></i>
+                  <FaMinus />
                 </button>
               </div>
               <button
@@ -124,7 +126,7 @@ function ProductView() {
               </button>
               {isAuth ? (
                 <button className="absolute top-0 left-0 w-11 h-11 bg-primary text-white rounded grid place-items-center shadow-xl">
-                  <i className="bx bx-heart text-xl"></i>
+                  <FaRegHeart />
                 </button>
               ) : null}
             </div>
