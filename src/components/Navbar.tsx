@@ -34,7 +34,9 @@ function Navbar() {
           to="/cart"
           className="cart relative"
         >
-          <Badge className="absolute -top-2 -right-2">{totalQuantity}</Badge>
+          {totalQuantity > 0 ? (
+            <Badge className="absolute -top-2 -right-2">{totalQuantity}</Badge>
+          ) : null}
           <IoIosCart className="text-3xl" />
           <p className="text-3xl sr-only">سلة الشراء</p>
         </Link>

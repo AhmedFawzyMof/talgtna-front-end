@@ -32,22 +32,27 @@ function Order() {
 
   const mutation = useMutation(
     async (data: unknown) => {
+      const header: { [key: string]: string } = {
+        "Content-Type": "application/json",
+      };
+
+      if (isAuth) {
+        header["Authorization"] = `Bearer ${token}`;
+      }
       const response = await fetch(`${BASE_URL}/order`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: header,
         body: JSON.stringify(data),
       });
 
-      setName("");
-      setSparePhone("");
-      setPhone("");
-      setBuilding("");
-      setFloor("");
-      setStreet("");
-      setCity("");
-      setMethod("");
+      // setName("");
+      // setSparePhone("");
+      // setPhone("");
+      // setBuilding("");
+      // setFloor("");
+      // setStreet("");
+      // setCity("");
+      // setMethod("");
 
       if (!response.ok) {
         toast.error("فشل في الطلب");
@@ -76,36 +81,26 @@ function Order() {
   }, [cart, totalQuantity]);
 
   const sendDataToServer = () => {
-    const coupon = discount
-      ? { code: discount.code, value: discount.value }
-      : { code: "", value: 0 };
-    let data = {};
+    const coupon =
+      discount.code !== undefined
+        ? { code: discount.code, value: discount.value }
+        : { code: "", value: 0 };
+    console.log(coupon);
+    const data: { [key: string]: string | object } = {
+      phone,
+      spare_phone,
+      city,
+      street,
+      building,
+      floor,
+      method,
+      cart: cart,
+      discount: coupon,
+    };
     if (isAuth) {
-      data = {
-        user: token,
-        phone,
-        spare_phone,
-        city,
-        street,
-        building,
-        floor,
-        method,
-        cart: cart,
-        discount: coupon,
-      };
+      data.user = token;
     } else {
-      data = {
-        name,
-        phone,
-        spare_phone,
-        city,
-        street,
-        building,
-        floor,
-        method,
-        cart: cart,
-        discount: { code: "", value: 0 },
-      };
+      data.name = name;
     }
     mutation.mutate(data);
   };
