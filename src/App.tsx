@@ -38,7 +38,7 @@ function Layout() {
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/talgtna",
     element: <Layout />,
     children: [
       {
@@ -94,7 +94,7 @@ const router = createBrowserRouter([
         element: <Cart />,
       },
       {
-        path: "/search",
+        path: "search",
         element: <Search />,
       },
     ],
