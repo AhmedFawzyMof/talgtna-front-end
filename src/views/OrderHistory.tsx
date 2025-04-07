@@ -15,13 +15,12 @@ interface OrderProduct {
 
 interface Order {
   id: string;
-  user: string;
+  created_at: string;
+  method: string;
+  discount: string;
   delivered: number;
   paid: number;
-  date: string;
-  discount: string;
-  city: string;
-  method: string;
+  total: number;
   products: OrderProduct[];
 }
 

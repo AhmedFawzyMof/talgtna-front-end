@@ -13,7 +13,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   token: "",
   isLogedIn: () => {
     set((state) => {
-      const token: string | null = localStorage.getItem("token");
+      const token: string | null = localStorage.getItem("customer-token");
       if (token) {
         state.isAuthenticated = true;
         state.token = token;
@@ -24,7 +24,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
   login: (token: string) => {
     set((state) => {
-      localStorage.setItem("token", token);
+      localStorage.setItem("customer-token", token);
       state.isAuthenticated = true;
       state.token = token;
       return state;
@@ -32,7 +32,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   },
   logout: () => {
     set((state) => {
-      localStorage.removeItem("token");
+      localStorage.removeItem("customer-token");
       state.isAuthenticated = false;
       state.token = "";
       return state;

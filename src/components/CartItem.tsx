@@ -80,7 +80,7 @@ function CartItem({ product }: { product: CartProduct }) {
               onClick={() => removeFromCart(product.id)}
               className="inline-flex items-center text-sm font-medium text-red-600 hover:underline dark:text-red-500"
             >
-              <FaRegTrashAlt /> &nbsp; Remove
+              <FaRegTrashAlt /> &nbsp; حذف
             </button>
           </div>
         </div>

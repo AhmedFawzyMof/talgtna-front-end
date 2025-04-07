@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/AuthStore";
 import { BASE_URL } from "../store/config";
 
-function Order() {
+export default function Order() {
   const cart = useCartStore((state) => state.cart);
   const isAuth = useAuthStore((state) => state.isAuthenticated);
   const token = useAuthStore((state) => state.token);
@@ -14,20 +14,11 @@ function Order() {
   const totalQuantity = useCartStore((state) => state.getTotalQuantity());
   const clearCart = useCartStore((state) => state.clearCart);
   const [subtotal, setSubtotal] = useState(0);
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [spare_phone, setSparePhone] = useState("");
-  const [city, setCity] = useState("");
-  const [street, setStreet] = useState("");
-  const [building, setBuilding] = useState("");
-  const [floor, setFloor] = useState("");
-  const [method, setMethod] = useState("");
   const navigate = useNavigate();
   const discount = useCartStore((state) => state.discount);
   const total = subtotal + 25;
   const discountValue: number = discount.value as number;
   const totalDiscount: number = total - discountValue;
-
   document.title = "EasyCookFrozen | الطلب";
 
   const mutation = useMutation(
@@ -39,20 +30,12 @@ function Order() {
       if (isAuth) {
         header["Authorization"] = `Bearer ${token}`;
       }
+
       const response = await fetch(`${BASE_URL}/order`, {
         method: "POST",
         headers: header,
         body: JSON.stringify(data),
       });
-
-      // setName("");
-      // setSparePhone("");
-      // setPhone("");
-      // setBuilding("");
-      // setFloor("");
-      // setStreet("");
-      // setCity("");
-      // setMethod("");
 
       if (!response.ok) {
         toast.error("فشل في الطلب");
@@ -61,10 +44,6 @@ function Order() {
       return response.json();
     },
     {
-      onError: () => {
-        toast.error("فشل في الطلب");
-      },
-
       onSuccess: (data) => {
         clearCart();
         login(data.token);
@@ -75,34 +54,33 @@ function Order() {
   );
 
   useEffect(() => {
+    if (cart.length === 0) {
+      navigate("/");
+    }
+
     setSubtotal(
       cart.reduce((total, item) => total + item.price * item.quantity, 0)
     );
   }, [cart, totalQuantity]);
 
-  const sendDataToServer = () => {
-    const coupon =
-      discount.code !== undefined
-        ? { code: discount.code, value: discount.value }
-        : { code: "", value: 0 };
-    console.log(coupon);
-    const data: { [key: string]: string | object } = {
-      phone,
-      spare_phone,
-      city,
-      street,
-      building,
-      floor,
-      method,
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const order = {
+      name: data.get("name"),
+      phone: data.get("phone"),
+      spare_phone: data.get("spare_phone"),
+      street: data.get("street"),
+      floor: data.get("floor"),
+      building: data.get("building"),
+      city: data.get("city"),
+      method: data.get("method"),
       cart: cart,
-      discount: coupon,
+      discount: discount,
+      total: totalDiscount,
     };
-    if (isAuth) {
-      data.user = token;
-    } else {
-      data.name = name;
-    }
-    mutation.mutate(data);
+
+    mutation.mutate(order);
   };
 
   return (
@@ -161,10 +139,7 @@ function Order() {
         <div className="rounded-lg bg-white w-[95%] md:w-4/5 p-8 shadow-lg lg:col-span-3 lg:p-12">
           <form
             id="orderForm"
-            onSubmit={(e) => {
-              e.preventDefault();
-              sendDataToServer();
-            }}
+            onSubmit={(e) => handleSubmit(e)}
             className="space-y-4"
           >
             {isAuth ? null : (
@@ -178,8 +153,7 @@ function Order() {
                   type="text"
                   id="name"
                   required
-                  onChange={(e) => setName(e.target.value)}
-                  value={name}
+                  name="name"
                 />
               </div>
             )}
@@ -194,8 +168,7 @@ function Order() {
                   type="tel"
                   id="phone"
                   required
-                  onChange={(e) => setPhone(e.target.value)}
-                  value={phone}
+                  name="phone"
                 />
               </div>
               <div>
@@ -207,9 +180,7 @@ function Order() {
                   placeholder="رقم هاتف احتياطي"
                   type="tel"
                   id="spare_phone"
-                  required
-                  onChange={(e) => setSparePhone(e.target.value)}
-                  value={spare_phone}
+                  name="spare_phone"
                 />
               </div>
             </div>
@@ -225,8 +196,7 @@ function Order() {
                   type="text"
                   id="street"
                   required
-                  onChange={(e) => setStreet(e.target.value)}
-                  value={street}
+                  name="street"
                 />
               </div>
 
@@ -240,8 +210,7 @@ function Order() {
                   type="text"
                   id="building"
                   required
-                  onChange={(e) => setBuilding(e.target.value)}
-                  value={building}
+                  name="building"
                 />
               </div>
             </div>
@@ -256,8 +225,7 @@ function Order() {
                 type="text"
                 id="floor"
                 required
-                onChange={(e) => setFloor(e.target.value)}
-                value={floor}
+                name="floor"
               />
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -272,8 +240,7 @@ function Order() {
                 <select
                   required
                   id="cities"
-                  onChange={(e) => setCity(e.target.value)}
-                  value={city}
+                  name="city"
                   className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
                 >
                   <option value="">أختر المدينه</option>
@@ -294,17 +261,15 @@ function Order() {
                 </label>
 
                 <select
-                  name="method"
                   required
+                  name="method"
                   id="payment"
-                  onChange={(e) => setMethod(e.target.value)}
-                  value={method}
                   className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
                 >
                   <option value="">اختار طريقة الدفع</option>
                   <option value="cash_on_delivery">الدفع عند الاستلام</option>
-                  <option value="creditcard_on_delivery">
-                    بالكارت عند الاستلام
+                  <option value="digital_wallet">
+                    الدفع باستخدام المحفظة الرقمية عند التسليم
                   </option>
                 </select>
               </div>
@@ -323,5 +288,3 @@ function Order() {
     </>
   );
 }
-
-export default Order;

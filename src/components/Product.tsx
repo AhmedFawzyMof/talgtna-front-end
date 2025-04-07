@@ -44,6 +44,7 @@ function ProductCard({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       });
@@ -67,7 +68,7 @@ function ProductCard({
 
   const addToFavourite = () => {
     if (isAuth) {
-      mutation.mutate({ user: token, product: CartProduct.id });
+      mutation.mutate({ product_id: CartProduct.id });
     } else {
       toast.error("يجب عليك تسجيل الدخول");
     }
