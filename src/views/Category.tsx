@@ -61,6 +61,7 @@ function Category() {
         <div className="categories w-full flex items-center gap-2 md:gap-5 px-2 md:px-5 my-3 justify-center">
           {categories.map((category: Category) => (
             <Button
+              href={`/category/${category.name}`}
               key={category.id}
               className="bg-primary text-nowrap shadow-md"
             >
