@@ -17,19 +17,22 @@ interface Product {
   description: string;
   offer: number;
   available: number;
+  isFavorite: boolean;
 }
 
 function ProductCard({
   product,
-  isFavorite,
   isAuthenticated,
+  inFavorites,
+  refetch,
 }: {
   product: Product;
-  isFavorite: boolean;
   isAuthenticated: boolean;
+  inFavorites: boolean;
+  refetch?: () => void;
 }) {
   const isAuth = isAuthenticated;
-  const token = useAuthStore((state) => state.token);
+  const authStore = useAuthStore((state) => state);
   const cart = useCartStore((state) => state.cart);
   const [isInCart, setInCart] = useState(false);
   const addToCart = useCartStore((state) => state.addToCart);
@@ -44,7 +47,7 @@ function ProductCard({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${authStore.token}`,
         },
         body: JSON.stringify(data),
       });
@@ -55,6 +58,8 @@ function ProductCard({
       const responseData = await response.json();
       if (responseData.success) {
         toast.success("تمت الإضافة إلى المفضلة بنجاح");
+        if (typeof refetch === "function") refetch();
+        authStore.setFavorites();
       } else {
         toast.error("المنتج موجود بالفعل في المفضلة");
       }
@@ -181,15 +186,19 @@ function ProductCard({
             <FaMinus />
           </button>
         </div>
-        {isAuth && !isFavorite ? (
+        {isAuth && !inFavorites && (
           <button
             onClick={addToFavourite}
             id="addToFav"
             className="bg-white p-2 rounded shadow"
           >
-            <FaHeart />
+            <FaHeart
+              className={`${
+                product.isFavorite ? "text-red-500" : "text-black"
+              }`}
+            />
           </button>
-        ) : null}
+        )}
       </div>
     </div>
   );

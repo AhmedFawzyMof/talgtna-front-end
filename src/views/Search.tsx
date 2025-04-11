@@ -14,6 +14,7 @@ interface Product {
   description: string;
   offer: number;
   available: number;
+  isFavorite: boolean;
 }
 
 function Search() {
@@ -21,7 +22,7 @@ function Search() {
     new URLSearchParams(window.location.search).get("query") || ""
   );
 
-  const isAuth = useAuthStore((state) => state.isAuthenticated);
+  const authStore = useAuthStore((state) => state);
 
   useEffect(() => {
     setQuery(new URLSearchParams(window.location.search).get("query") || "");
@@ -33,18 +34,31 @@ function Search() {
       fetch(`${BASE_URL}/products/search`, {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${authStore.token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ query }),
       }).then((res) => res.json()),
     {
-      staleTime: 1000 * 60 * 5, // data is fresh for 5 minutes
+      staleTime: Infinity,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
     }
   );
 
   const products: Product[] = data?.products ?? [];
+
+  if (data?.favorites) {
+    products.forEach((product) => {
+      const productInFavorites = data.favorites.find(
+        (favorite: any) => favorite.product === product.id
+      );
+
+      if (productInFavorites) {
+        Object.assign(product, { isFavorite: true });
+      }
+    });
+  }
 
   if (products.length === 0) {
     return (
@@ -66,8 +80,8 @@ function Search() {
           <ProductCard
             key={product.id}
             product={product}
-            isFavorite={false}
-            isAuthenticated={isAuth}
+            inFavorites={false}
+            isAuthenticated={authStore.isAuthenticated}
           />
         ))}
       </div>

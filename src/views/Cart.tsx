@@ -19,7 +19,7 @@ function Cart() {
     totalDiscount = total - discountValue;
   }
 
-  document.title = "EasyCookFrozen | السلة";
+  document.title = "Talgtna | السلة";
 
   useEffect(() => {
     setSubtotal(
@@ -99,8 +99,7 @@ function Cart() {
 
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                    {" "}
-                    أو{" "}
+                    أو
                   </span>
                   <Link
                     to="/"
@@ -115,14 +114,16 @@ function Cart() {
         </div>
       )}
       {cart.length === 0 && (
-        <div className="flex items-center justify-center flex-col gap-4 mt-12">
-          <img className="h-40 w-40" src={CartEmpty} alt="empty cart" />
-          <Link
-            to="/"
-            className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-          >
-            Return to Home
-          </Link>
+        <div className="w-full grid place-items-center">
+          <div className="flex items-center justify-center flex-col gap-4 mt-12 w-64 shadow-md border border-gray-200 rounded p-4">
+            <img className="h-40 w-40" src={CartEmpty} alt="empty cart" />
+            <Link
+              to="/"
+              className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            >
+              مواصلة التسوق
+            </Link>
+          </div>
         </div>
       )}
     </section>

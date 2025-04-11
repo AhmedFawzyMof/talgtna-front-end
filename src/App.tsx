@@ -22,14 +22,23 @@ import { useCartStore } from "./store/CartStore";
 
 import { Toaster } from "sonner";
 import Search from "./views/Search";
+import CartToast from "./components/CartToast";
 
 const queryClient = new QueryClient();
 
 function Layout() {
+  const authStore = useAuthStore((state) => state);
+  const cartStore = useCartStore((state) => state);
+  const totalQuantity = cartStore.getTotalQuantity();
+
+  authStore.initlize();
+  cartStore.initlize();
+
   return (
     <>
       <Navbar />
       <div className=" max-w-screen-2xl mx-auto xl:px-8">
+        {totalQuantity > 0 ? <CartToast /> : null}
         <Outlet />
       </div>
     </>
@@ -102,10 +111,6 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  const setCart = useCartStore((state) => state.setCart);
-  const isAuth = useAuthStore((state) => state.isLogedIn);
-  setCart();
-  isAuth();
   return (
     <QueryClientProvider client={queryClient}>
       <Toaster position="bottom-right" expand={false} richColors />

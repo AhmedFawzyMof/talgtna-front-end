@@ -8,9 +8,9 @@ function ContactUs() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
+  document.title = "Talgtna | تواصل معنا";
 
   const mutation = useMutation(
-    (document.title = "EasyCookFrozen | تواصل معنا"),
     async (data: unknown) => {
       const response = await fetch(`${BASE_URL}/contact`, {
         method: "POST",
@@ -29,13 +29,12 @@ function ContactUs() {
         toast.error("فشل في إرسال الرسالة");
       }
 
-      toast.promise(response.json(), {
-        loading: "ارسال رسالة...",
-        success: "تم إرسال الرسالة بنجاح",
-        error: "فشل في إرسال الرسالة",
-      });
+      return response.json();
     },
     {
+      onSuccess: () => {
+        toast.success("تم إرسال الرسالة بنجاح");
+      },
       onError: () => {
         toast.error("فشل في إرسال الرسالة");
       },

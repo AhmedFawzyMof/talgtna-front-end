@@ -20,14 +20,19 @@ interface Product {
   description: string;
   offer: number;
   available: number;
+  isFavorite: boolean;
 }
 function Company() {
-  const isAuth = useAuthStore((state) => state.isAuthenticated);
+  const authStore = useAuthStore((state) => state);
   const { name } = useParams<{ name: string }>();
-  const { isLoading, error, data } = useQuery("company", () =>
-    fetch(`${BASE_URL}/company/${name}`).then((res) => res.json())
+  const { isLoading, error, data, refetch } = useQuery("company", () =>
+    fetch(`${BASE_URL}/company/${name}`, {
+      headers: {
+        Authorization: `Bearer ${authStore.token}`,
+      },
+    }).then((res) => res.json())
   );
-  document.title = `EasyCookFrozen | ${name}`;
+  document.title = `Talgtna | ${name}`;
 
   if (isLoading) return <p>Loading...</p>;
 
@@ -36,6 +41,17 @@ function Company() {
   const company: Company = data?.company ?? {};
   const products: Product[] = data?.products ?? [];
 
+  if (data?.favorites) {
+    products.forEach((product) => {
+      const productInFavorites = data.favorites.find(
+        (favorite: any) => favorite.product === product.id
+      );
+
+      if (productInFavorites) {
+        Object.assign(product, { isFavorite: true });
+      }
+    });
+  }
   return (
     <>
       <div className="company my-3 flex flex-col sm:flex-row gap-5 bg-white rounded shadow items-center sm:items-start p-4">
@@ -54,8 +70,9 @@ function Company() {
           <ProductCard
             key={product.id}
             product={product}
-            isFavorite={false}
-            isAuthenticated={isAuth}
+            inFavorites={false}
+            refetch={refetch}
+            isAuthenticated={authStore.isAuthenticated}
           />
         ))}
       </div>

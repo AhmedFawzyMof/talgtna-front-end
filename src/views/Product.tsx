@@ -20,7 +20,7 @@ interface Product {
 
 function ProductView() {
   const { id } = useParams();
-  const isAuth = useAuthStore((state) => state.isAuthenticated);
+  const authStore = useAuthStore((state) => state);
   const cart = useCartStore((state) => state.cart);
   const addToCart = useCartStore((state) => state.addToCart);
   const incrementQuantity = useCartStore((state) => state.incrementQuantity);
@@ -72,7 +72,7 @@ function ProductView() {
 
   const product: Product = data?.product ?? {};
 
-  document.title = `EasyCookFrozen | ${product.name}`;
+  document.title = `Talgtna | ${product.name}`;
 
   const CartProduct = {
     id: product.id,
@@ -124,7 +124,7 @@ function ProductView() {
               >
                 اضافة الى السلة
               </button>
-              {isAuth ? (
+              {authStore.token ? (
                 <button className="absolute top-0 left-0 w-11 h-11 bg-primary text-white rounded grid place-items-center shadow-xl">
                   <FaRegHeart />
                 </button>

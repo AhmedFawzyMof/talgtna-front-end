@@ -29,18 +29,23 @@ interface Product {
   description: string;
   offer: number;
   available: number;
+  isFavorite: boolean;
 }
 function Category() {
-  const isAuth = useAuthStore((state) => state.isAuthenticated);
+  const authStore = useAuthStore((state) => state);
   const { name } = useParams<{ name: string }>();
   const { isLoading, error, data, refetch } = useQuery({
     queryKey: ["category", { name }],
     queryFn: () =>
-      fetch(`${BASE_URL}/category/${name}`).then((res) => res.json()),
+      fetch(`${BASE_URL}/category/${name}`, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+        },
+      }).then((res) => res.json()),
     enabled: false,
   });
 
-  document.title = `EasyCookFrozen | ${name}`;
+  document.title = `Talgtna | ${name}`;
 
   useEffect(() => {
     refetch();
@@ -53,6 +58,18 @@ function Category() {
   const offers: Offer[] = data?.offers ?? [];
   const categories: Category[] = data?.categories ?? [];
   const products: Product[] = data?.products ?? [];
+
+  if (data?.favorites) {
+    products.forEach((product) => {
+      const productInFavorites = data.favorites.find(
+        (favorite: any) => favorite.product === product.id
+      );
+
+      if (productInFavorites) {
+        Object.assign(product, { isFavorite: true });
+      }
+    });
+  }
 
   return (
     <>
@@ -75,8 +92,8 @@ function Category() {
           <ProductCard
             key={product.id}
             product={product}
-            isFavorite={false}
-            isAuthenticated={isAuth}
+            inFavorites={false}
+            isAuthenticated={authStore.isAuthenticated}
           />
         ))}
       </div>

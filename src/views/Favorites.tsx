@@ -15,6 +15,7 @@ interface Product {
   description: string;
   offer: number;
   available: number;
+  isFavorite: boolean;
 }
 
 function Favorites() {
@@ -35,7 +36,7 @@ function Favorites() {
     }).then((res) => res.json())
   );
 
-  document.title = "EasyCookFrozen | المفضلات";
+  document.title = "Talgtna | المفضلات";
 
   const products: Product[] = data?.products ?? [];
   if (isLoading) return <p>Loading...</p>;
@@ -43,12 +44,17 @@ function Favorites() {
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
   return (
     <>
+      {products.length === 0 && (
+        <div className="w-full h-screen grid place-items-center">
+          <p>لا يوجد منتجات في المفضلات</p>
+        </div>
+      )}
       <div className="products my-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-5">
         {products.map((product: Product) => (
           <ProductCard
             key={product.id}
             product={product}
-            isFavorite={true}
+            inFavorites={true}
             isAuthenticated={isAuth}
           />
         ))}

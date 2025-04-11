@@ -45,7 +45,7 @@ function OrderHistory() {
   if (isLoading) return <p>Loading...</p>;
 
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
-  document.title = `EasyCookFrozen | سجل الطلبات`;
+  document.title = `Talgtna | سجل الطلبات`;
 
   if (data?.orders.length == 0) {
     return (

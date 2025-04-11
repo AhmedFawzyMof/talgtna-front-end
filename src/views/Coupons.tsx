@@ -6,7 +6,7 @@ import Coupon from "../components/Coupon";
 import { BASE_URL } from "../store/config";
 
 function Coupons() {
-  document.title = `EasyCookFrozen | كوبونات`;
+  document.title = `Talgtna | كوبونات`;
 
   const token = useAuthStore((state) => state.token);
   const isAuth = useAuthStore((state) => state.isAuthenticated);

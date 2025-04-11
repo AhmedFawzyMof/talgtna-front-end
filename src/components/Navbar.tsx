@@ -13,6 +13,7 @@ function Navbar() {
   const [query, setQuery] = useState("");
   const isAuth = useAuthStore((state) => state.isAuthenticated);
   const totalQuantity = useCartStore((state) => state.getTotalQuantity());
+  const favorites = useAuthStore((state) => state.favorites);
   const navigate = useNavigate();
 
   const handelSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -35,7 +36,9 @@ function Navbar() {
           className="cart relative"
         >
           {totalQuantity > 0 ? (
-            <Badge className="absolute -top-2 -right-2">{totalQuantity}</Badge>
+            <Badge className="absolute -top-2 -right-2 bg-primary text-white font-bold">
+              {totalQuantity}
+            </Badge>
           ) : null}
           <IoIosCart className="text-3xl" />
           <p className="text-3xl sr-only">سلة الشراء</p>
@@ -44,9 +47,14 @@ function Navbar() {
           <Link
             onClick={() => setIsActive(false)}
             to="/favorites"
-            className="login"
+            className="relative"
           >
             <IoIosHeart className="text-3xl" />
+            {favorites > 0 ? (
+              <Badge className="absolute -top-2 -right-2 bg-primary text-white font-bold">
+                {favorites}
+              </Badge>
+            ) : null}
             <p className="text-3xl sr-only">المفضلة</p>
           </Link>
         ) : null}
@@ -87,15 +95,6 @@ function Navbar() {
           isActive ? "translate-x-0" : " translate-x-[250px]"
         }`}
       >
-        {isAuth ? (
-          <Link
-            onClick={() => setIsActive(false)}
-            to="/coupons"
-            className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
-          >
-            القسائم
-          </Link>
-        ) : null}
         <Link
           onClick={() => setIsActive(false)}
           to="/"
@@ -117,7 +116,7 @@ function Navbar() {
           to="/contact"
           className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
         >
-          أتصل بنا
+          تواصل معنا
         </Link>
         <Link
           onClick={() => setIsActive(false)}

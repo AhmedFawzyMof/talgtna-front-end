@@ -8,7 +8,7 @@ import { BASE_URL } from "../store/config";
 
 export default function Order() {
   const cart = useCartStore((state) => state.cart);
-  const isAuth = useAuthStore((state) => state.isAuthenticated);
+  const authStore = useAuthStore((state) => state);
   const token = useAuthStore((state) => state.token);
   const login = useAuthStore((state) => state.login);
   const totalQuantity = useCartStore((state) => state.getTotalQuantity());
@@ -19,7 +19,32 @@ export default function Order() {
   const total = subtotal + 25;
   const discountValue: number = discount.value as number;
   const totalDiscount: number = total - discountValue;
-  document.title = "EasyCookFrozen | الطلب";
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    spare_phone: "",
+    street: "",
+    floor: "",
+    building: "",
+    city: "",
+    method: "",
+  });
+
+  useEffect(() => {
+    const savedOrderInfo = localStorage.getItem("order_info");
+    if (savedOrderInfo) {
+      try {
+        const orderInfo = JSON.parse(savedOrderInfo);
+        setFormData((prev) => ({
+          ...prev,
+          ...orderInfo,
+        }));
+      } catch (error) {
+        console.error("Failed to parse saved order info", error);
+      }
+    }
+  }, []);
+  document.title = "Talgtna | الطلب";
 
   const mutation = useMutation(
     async (data: unknown) => {
@@ -27,7 +52,7 @@ export default function Order() {
         "Content-Type": "application/json",
       };
 
-      if (isAuth) {
+      if (authStore.isAuthenticated) {
         header["Authorization"] = `Bearer ${token}`;
       }
 
@@ -46,7 +71,7 @@ export default function Order() {
     {
       onSuccess: (data) => {
         clearCart();
-        login(data.token);
+        login(data.token, data.favorites);
         navigate("/ordersuccess/" + data.order);
         toast.success("تم إرسال الطلب بنجاح");
       },
@@ -79,6 +104,21 @@ export default function Order() {
       discount: discount,
       total: totalDiscount,
     };
+
+    if (data.get("save_order_data") === "on") {
+      localStorage.setItem(
+        "order_info",
+        JSON.stringify({
+          phone: data.get("phone"),
+          spare_phone: data.get("spare_phone"),
+          street: data.get("street"),
+          floor: data.get("floor"),
+          building: data.get("building"),
+          city: data.get("city"),
+          method: data.get("method"),
+        })
+      );
+    }
 
     mutation.mutate(order);
   };
@@ -142,7 +182,7 @@ export default function Order() {
             onSubmit={(e) => handleSubmit(e)}
             className="space-y-4"
           >
-            {isAuth ? null : (
+            {authStore.isAuthenticated ? null : (
               <div>
                 <label className="sr-only" htmlFor="name">
                   الاسم
@@ -169,6 +209,10 @@ export default function Order() {
                   id="phone"
                   required
                   name="phone"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
                 />
               </div>
               <div>
@@ -181,10 +225,13 @@ export default function Order() {
                   type="tel"
                   id="spare_phone"
                   name="spare_phone"
+                  value={formData.spare_phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, spare_phone: e.target.value })
+                  }
                 />
               </div>
             </div>
-
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="sr-only" htmlFor="street">
@@ -197,11 +244,15 @@ export default function Order() {
                   id="street"
                   required
                   name="street"
+                  value={formData.street}
+                  onChange={(e) =>
+                    setFormData({ ...formData, street: e.target.value })
+                  }
                 />
               </div>
 
               <div>
-                <label className="sr-only" htmlFor="مبنى">
+                <label className="sr-only" htmlFor="building">
                   عماره
                 </label>
                 <input
@@ -211,10 +262,13 @@ export default function Order() {
                   id="building"
                   required
                   name="building"
+                  value={formData.building}
+                  onChange={(e) =>
+                    setFormData({ ...formData, building: e.target.value })
+                  }
                 />
               </div>
             </div>
-
             <div>
               <label className="sr-only" htmlFor="floor">
                 طابق
@@ -226,6 +280,10 @@ export default function Order() {
                 id="floor"
                 required
                 name="floor"
+                value={formData.floor}
+                onChange={(e) =>
+                  setFormData({ ...formData, floor: e.target.value })
+                }
               />
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -242,6 +300,10 @@ export default function Order() {
                   id="cities"
                   name="city"
                   className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
+                  value={formData.city}
+                  onChange={(e) =>
+                    setFormData({ ...formData, city: e.target.value })
+                  }
                 >
                   <option value="">أختر المدينه</option>
                   <option value="الشروق">الشروق</option>
@@ -265,6 +327,10 @@ export default function Order() {
                   name="method"
                   id="payment"
                   className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm"
+                  value={formData.method}
+                  onChange={(e) =>
+                    setFormData({ ...formData, method: e.target.value })
+                  }
                 >
                   <option value="">اختار طريقة الدفع</option>
                   <option value="cash_on_delivery">الدفع عند الاستلام</option>
@@ -274,6 +340,21 @@ export default function Order() {
                 </select>
               </div>
             </div>
+            {authStore.isAuthenticated && (
+              <div className="flex items-center gap-2">
+                <label
+                  htmlFor="save_order_data"
+                  className="block text-sm font-medium text-gray-900"
+                >
+                  حفظ البينات
+                </label>
+                <input
+                  type="checkbox"
+                  name="save_order_data"
+                  id="save_order_data"
+                />
+              </div>
+            )}
             <div className="mt-4">
               <button
                 type="submit"

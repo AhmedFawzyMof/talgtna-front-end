@@ -12,7 +12,7 @@ type CartStore = {
   cart: CartProduct[];
   discount: { [key: string]: number | string };
   setDiscount: (code: string, value: number) => void;
-  setCart: () => void;
+  initlize: () => void;
   addToCart: (product: CartProduct) => void;
   incrementQuantity: (id: number) => void;
   decrementQuantity: (id: number) => void;
@@ -22,17 +22,18 @@ type CartStore = {
 };
 
 export const useCartStore = create<CartStore>((set) => ({
-  cart: JSON.parse(localStorage.getItem("cart") as string) || [],
+  cart: [],
   discount: {},
-  setCart: () => {
+  initlize: () => {
     set((state) => {
-      if (!localStorage.getItem("cart")) {
-        state.cart = [];
-        localStorage.setItem("cart", JSON.stringify(state.cart));
-        return { cart: state.cart };
+      const cart = JSON.parse(localStorage.getItem("cart") as string) || [];
+
+      if (cart) {
+        state.cart = cart;
+        return state;
       }
 
-      return { cart: state.cart };
+      return state;
     });
   },
   setDiscount: (code: string, value: number) => {
