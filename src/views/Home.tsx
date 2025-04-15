@@ -1,12 +1,13 @@
 import { useQuery } from "react-query";
 import CarouselComponent from "../components/Carousel";
-import CompanyDiv from "../components/CompanyDiv";
 import { BASE_URL } from "../store/config";
 import { Button } from "flowbite-react";
+import { CategoryDiv } from "../components/CategoryDiv";
 
 interface Category {
   id: number;
   name: string;
+  image: string;
 }
 
 interface Company {
@@ -41,21 +42,24 @@ function Home() {
       <CarouselComponent offers={offers} />
       <main>
         <div className="w-full overflow-x-scroll grid place-items-center">
-          <div className="categories w-full flex items-center gap-2 md:gap-5 px-2 md:px-5 my-3 justify-center">
-            {categories.map((category: Category) => (
-              <Button
-                href={`/category/${category.name}`}
-                key={category.id}
-                className="bg-primary text-nowrap shadow-md"
-              >
-                {category.name}
-              </Button>
-            ))}
+          <div className="w-full flex items-center gap-2 md:gap-5 px-2 md:px-5 my-3 justify-center">
+            {companies.map(
+              (company: Company) =>
+                company.soon === 0 && (
+                  <Button
+                    href={`/company/${company.name}`}
+                    key={company.id}
+                    className="bg-primary text-nowrap shadow-md"
+                  >
+                    {company.name}
+                  </Button>
+                )
+            )}
           </div>
         </div>
-        <div className="companies my-6 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-5 px-2 md:px-5 place-items-center">
-          {companies.map((company: Company) => (
-            <CompanyDiv key={company.id} {...company} />
+        <div className="my-6 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-5 px-2 md:px-5 place-items-center">
+          {categories.map((category: Category) => (
+            <CategoryDiv key={category.id} {...category} />
           ))}
         </div>
       </main>

@@ -7,9 +7,11 @@ import { useEffect } from "react";
 import { Button } from "flowbite-react";
 import { useAuthStore } from "../store/AuthStore";
 
-interface Category {
+interface Company {
   id: number;
   name: string;
+  image: string;
+  soon: number;
 }
 
 interface Offer {
@@ -56,7 +58,7 @@ function Category() {
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
 
   const offers: Offer[] = data?.offers ?? [];
-  const categories: Category[] = data?.categories ?? [];
+  const companies: Company[] = data?.companies ?? [];
   const products: Product[] = data?.products ?? [];
 
   if (data?.favorites) {
@@ -76,15 +78,18 @@ function Category() {
       <CarouselComponent offers={offers} />
       <div className="w-full overflow-x-scroll grid place-items-center">
         <div className="categories w-full flex items-center gap-2 md:gap-5 px-2 md:px-5 my-3 justify-center">
-          {categories.map((category: Category) => (
-            <Button
-              href={`/category/${category.name}`}
-              key={category.id}
-              className="bg-primary text-nowrap shadow-md"
-            >
-              {category.name}
-            </Button>
-          ))}
+          {companies.map(
+            (company: Company) =>
+              company.soon === 0 && (
+                <Button
+                  href={`/company/${company.name}`}
+                  key={company.id}
+                  className="bg-primary text-nowrap shadow-md"
+                >
+                  {company.name}
+                </Button>
+              )
+          )}
         </div>
       </div>
       <div className="products grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-5">
