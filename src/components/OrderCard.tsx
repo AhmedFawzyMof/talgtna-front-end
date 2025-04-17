@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 interface OrderProduct {
   id: number;
   name: string;
@@ -10,15 +12,32 @@ interface Order {
   id: string;
   created_at: string;
   method: string;
+  city: string;
   discount: string;
   delivered: number;
-  paid: number;
+  processing: number;
   total: number;
   products: OrderProduct[];
 }
 
-function OrderCard({ order }: { order: Order }) {
+function OrderCard({ order, cities }: { order: Order; cities: any }) {
   const discount = JSON.parse(order.discount);
+  const [total, setTotal] = useState(0);
+  const [delivered, setDelivered] = useState(order.delivered);
+
+  useEffect(() => {
+    let sum = 0;
+    order.products.forEach((product) => {
+      sum += product.price * product.quantity;
+    });
+
+    const city = cities.find((city: any) => city.city === order.city);
+    sum += city.value;
+    sum -= discount.value;
+
+    setTotal(sum);
+    setDelivered(city.value);
+  }, [order]);
 
   return (
     <div className=" w-11/12 md:w-4/5 flow-root shadow-lg bg-white rounded-lg border border-gray-100 py-3 mx-5 sm:mx-14">
@@ -80,14 +99,12 @@ function OrderCard({ order }: { order: Order }) {
           </dd>
         </div>
         <div className="grid grid-cols-1 gap-1 p-3 even:bg-gray-50 sm:grid-cols-3 sm:gap-4">
+          <dt className="font-bold  text-primary">التوصيل</dt>
+          <dd className="text-gray-700 sm:col-span-2">{delivered} ج.م</dd>
+        </div>
+        <div className="grid grid-cols-1 gap-1 p-3 even:bg-gray-50 sm:grid-cols-3 sm:gap-4">
           <dt className="font-bold  text-primary">إجمالي الطلب</dt>
-          {discount.code !== "" ? (
-            <dd className="text-gray-700 sm:col-span-2">
-              {order.total - discount.value} ج.م
-            </dd>
-          ) : (
-            <dd className="text-gray-700 sm:col-span-2">{order.total} ج.م</dd>
-          )}
+          <dd className="text-gray-700 sm:col-span-2">{total} ج.م</dd>
         </div>
         {discount.code !== "" ? (
           <div className="grid grid-cols-1 gap-1 p-3 even:bg-gray-50 sm:grid-cols-3 sm:gap-4">
@@ -96,9 +113,9 @@ function OrderCard({ order }: { order: Order }) {
           </div>
         ) : null}
         <div className="grid grid-cols-1 gap-1 p-3 even:bg-gray-50 sm:grid-cols-3 sm:gap-4">
-          <dt className="font-bold  text-primary">الطلب مدفوع</dt>
+          <dt className="font-bold  text-primary">الطلب قيد التجهيز</dt>
           <dd className="text-gray-700 sm:col-span-2 capitalize">
-            {order.paid == 1 ? "نعم" : "لا"}
+            {order.processing == 1 ? "نعم" : "لا"}
           </dd>
         </div>
         <div className="grid grid-cols-1 gap-1 p-3 even:bg-gray-50 sm:grid-cols-3 sm:gap-4">

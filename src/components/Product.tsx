@@ -109,7 +109,7 @@ function ProductCard({
     decrementQuantity(product.id);
   };
 
-  if (product.available === 0) return null;
+  if (product.available === 1) return null;
   return (
     <div
       key={product.id}
@@ -194,7 +194,7 @@ function ProductCard({
           >
             <FaHeart
               className={`${
-                product.isFavorite ? "text-red-500" : "text-black"
+                product.isFavorite ? "text-primary" : "text-black"
               }`}
             />
           </button>

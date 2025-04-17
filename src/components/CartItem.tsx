@@ -40,15 +40,12 @@ function CartItem({ product }: { product: CartProduct }) {
             >
               <FaMinus />
             </button>
-            <input
-              type="text"
+            <p
               id="counter-input-4"
-              data-input-counter
               className="w-10 shrink-0 border-0 bg-transparent text-center text-md font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
-              placeholder=""
-              value={product.quantity}
-              required
-            />
+            >
+              {product.quantity}
+            </p>
             <button
               type="button"
               onClick={() => incrementQuantity(product.id)}

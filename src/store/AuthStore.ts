@@ -8,6 +8,7 @@ type AuthStore = {
   login: (token: string, favorites: number) => void;
   logout: () => void;
   setFavorites: () => void;
+  favoritesNumber: (favorites: number) => void;
 };
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -54,6 +55,13 @@ export const useAuthStore = create<AuthStore>((set) => ({
       const current = state.favorites + 1;
       localStorage.setItem("favorites", `${current}`);
       return { favorites: current };
+    });
+  },
+  favoritesNumber: (favorites: number) => {
+    set((state) => {
+      state.favorites = favorites;
+      localStorage.setItem("favorites", `${favorites}`);
+      return state;
     });
   },
 }));

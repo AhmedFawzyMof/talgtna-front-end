@@ -1,8 +1,8 @@
 import { useQuery } from "react-query";
 import CarouselComponent from "../components/Carousel";
 import { BASE_URL } from "../store/config";
-import { Button } from "flowbite-react";
 import { CategoryDiv } from "../components/CategoryDiv";
+import { Link } from "react-router-dom";
 
 interface Category {
   id: number;
@@ -35,6 +35,8 @@ function Home() {
 
   if (isLoading) return <p>Loading...</p>;
 
+  document.title = "Talgtna | الرئيسية";
+
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
 
   return (
@@ -46,13 +48,13 @@ function Home() {
             {companies.map(
               (company: Company) =>
                 company.soon === 0 && (
-                  <Button
-                    href={`/company/${company.name}`}
+                  <Link
+                    to={`/company/${company.name}`}
                     key={company.id}
-                    className="bg-primary text-nowrap shadow-md"
+                    className="bg-primary text-nowrap shadow-md text-white px-2 py-2 rounded-md"
                   >
                     {company.name}
-                  </Button>
+                  </Link>
                 )
             )}
           </div>

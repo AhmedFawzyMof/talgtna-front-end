@@ -8,9 +8,15 @@ interface CartProduct {
   price: number;
 }
 
+interface discount {
+  code: string;
+  value: number;
+}
+
 type CartStore = {
   cart: CartProduct[];
-  discount: { [key: string]: number | string };
+  discount: discount;
+  dilivery: number;
   setDiscount: (code: string, value: number) => void;
   initlize: () => void;
   addToCart: (product: CartProduct) => void;
@@ -19,11 +25,13 @@ type CartStore = {
   removeFromCart: (id: number) => void;
   getTotalQuantity: () => number;
   clearCart: () => void;
+  setDilivery: (dilivery: number) => void;
 };
 
 export const useCartStore = create<CartStore>((set) => ({
   cart: [],
-  discount: {},
+  discount: { code: "", value: 0 } as discount,
+  dilivery: 30,
   initlize: () => {
     set((state) => {
       const cart = JSON.parse(localStorage.getItem("cart") as string) || [];
@@ -109,6 +117,12 @@ export const useCartStore = create<CartStore>((set) => ({
     set(() => {
       localStorage.setItem("cart", JSON.stringify([]));
       return { cart: [] };
+    });
+  },
+  setDilivery: (dilivery: number) => {
+    set((state) => {
+      state.dilivery = dilivery;
+      return { dilivery: state.dilivery };
     });
   },
 }));

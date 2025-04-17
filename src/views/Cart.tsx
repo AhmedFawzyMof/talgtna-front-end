@@ -4,20 +4,14 @@ import CartItem from "../components/CartItem";
 import CartEmpty from "../assets/cart.png";
 import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
+import Discount from "../components/Discount";
 
 function Cart() {
-  const cart = useCartStore((state) => state.cart);
-  const totalQuantity = useCartStore((state) => state.getTotalQuantity());
+  const cartStore = useCartStore((state) => state);
   const [subtotal, setSubtotal] = useState(0);
-  const discount = useCartStore((state) => state.discount);
-  const discountValue: number = discount.value as number;
-  const delvery = 25;
-  const total = subtotal + delvery;
-  let totalDiscount: number = total;
-
-  if (discountValue) {
-    totalDiscount = total - discountValue;
-  }
+  const cart = cartStore.cart;
+  const totalQuantity = cartStore.getTotalQuantity();
+  const discount = cartStore.discount;
 
   document.title = "Talgtna | السلة";
 
@@ -26,6 +20,8 @@ function Cart() {
       cart.reduce((total, item) => total + item.price * item.quantity, 0)
     );
   }, [cart, totalQuantity]);
+
+  const total = subtotal - discount.value;
   return (
     <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
       {cart.length > 0 && (
@@ -42,71 +38,73 @@ function Cart() {
                 ))}
               </div>
             </div>
+            <div className="flex flex-col mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
+              <Discount />
+              <div>
+                <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
+                  <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                    ملخص الطلب
+                  </p>
 
-            <div className="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
-              <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
-                <p className="text-xl font-semibold text-gray-900 dark:text-white">
-                  ملخص الطلب
-                </p>
-
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <dl className="flex items-center justify-between gap-4">
-                      <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
-                        السعر الأصلي
-                      </dt>
-                      <dd className="text-base font-medium text-gray-900 dark:text-white">
-                        {subtotal} ج
-                      </dd>
-                    </dl>
-
-                    {discountValue !== 0 || discountValue !== undefined || (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
                       <dl className="flex items-center justify-between gap-4">
                         <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
-                          التوفير
+                          السعر الأصلي
                         </dt>
-                        <dd className="text-base font-medium text-green-600">
-                          {discountValue} ج
+                        <dd className="text-base font-medium text-gray-900 dark:text-white">
+                          {subtotal} ج
                         </dd>
                       </dl>
-                    )}
-                    <dl className="flex items-center justify-between gap-4">
-                      <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
-                        توصيل
+
+                      {discount.value !== 0 && (
+                        <dl className="flex items-center justify-between gap-4">
+                          <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
+                            التوفير
+                          </dt>
+                          <dd className="text-base font-medium text-green-600">
+                            {discount.value} ج
+                          </dd>
+                        </dl>
+                      )}
+                      <dl className="flex items-center justify-between gap-4">
+                        <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
+                          توصيل
+                        </dt>
+                        <dd className="text-base font-medium text-red-600">
+                          {cartStore.dilivery} ج
+                        </dd>
+                      </dl>
+                    </div>
+
+                    <dl className="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
+                      <dt className="text-base font-bold text-gray-900 dark:text-white">
+                        المجموع
                       </dt>
-                      <dd className="text-base font-medium text-red-600">
-                        {delvery} ج
+                      <dd className="text-base font-bold text-gray-900 dark:text-white">
+                        {total + cartStore.dilivery} ج
                       </dd>
                     </dl>
                   </div>
 
-                  <dl className="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
-                    <dt className="text-base font-bold text-gray-900 dark:text-white">
-                      المجموع
-                    </dt>
-                    <dd className="text-base font-bold text-gray-900 dark:text-white">
-                      {totalDiscount} ج
-                    </dd>
-                  </dl>
-                </div>
-
-                <Link
-                  to="/order"
-                  className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-                >
-                  الطلب
-                </Link>
-
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                    أو
-                  </span>
                   <Link
-                    to="/"
-                    className="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500"
+                    to="/order"
+                    className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                   >
-                    مواصلة التسوق <FaArrowRight />
+                    الطلب
                   </Link>
+
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                      أو
+                    </span>
+                    <Link
+                      to="/"
+                      className="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500"
+                    >
+                      مواصلة التسوق <FaArrowRight />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>

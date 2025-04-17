@@ -19,11 +19,10 @@ interface Product {
 }
 
 function Favorites() {
-  const token = useAuthStore((state) => state.token);
-  const isAuth = useAuthStore((state) => state.isAuthenticated);
+  const authStore = useAuthStore((state) => state);
   const navigate = useNavigate();
 
-  if (!isAuth) {
+  if (!authStore.isAuthenticated) {
     toast.error("يجب عليك تسجيل الدخول");
     navigate("/");
   }
@@ -31,7 +30,7 @@ function Favorites() {
   const { isLoading, error, data } = useQuery("favorites", () =>
     fetch(`${BASE_URL}/user/favorites`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${authStore.token}`,
       },
     }).then((res) => res.json())
   );
@@ -39,9 +38,12 @@ function Favorites() {
   document.title = "Talgtna | المفضلات";
 
   const products: Product[] = data?.products ?? [];
+
   if (isLoading) return <p>Loading...</p>;
 
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
+
+  authStore.favoritesNumber(data.favorites);
   return (
     <>
       {products.length === 0 && (
@@ -55,7 +57,7 @@ function Favorites() {
             key={product.id}
             product={product}
             inFavorites={true}
-            isAuthenticated={isAuth}
+            isAuthenticated={authStore.isAuthenticated}
           />
         ))}
       </div>

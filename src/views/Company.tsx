@@ -1,15 +1,27 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import ProductCard from "../components/Product";
 import { BASE_URL, IMAGE_BASE_URL } from "../store/config";
 import { useAuthStore } from "../store/AuthStore";
+import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
+function useUrlQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 interface Company {
   id: number;
   image: string;
   name: string;
   soon: number;
 }
+
+interface Category {
+  id: number;
+  name: string;
+  image: string;
+}
+
 interface Product {
   id: number;
   name: string;
@@ -25,12 +37,21 @@ interface Product {
 function Company() {
   const authStore = useAuthStore((state) => state);
   const { name } = useParams<{ name: string }>();
-  const { isLoading, error, data, refetch } = useQuery("company", () =>
-    fetch(`${BASE_URL}/company/${name}`, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-      },
-    }).then((res) => res.json())
+  const [category, setCategory] = useState("");
+  const urlQuery = useUrlQuery();
+
+  useEffect(() => {
+    setCategory(urlQuery.get("category") ?? "");
+  }, [category, urlQuery.get("category")]);
+
+  const { isLoading, error, data, refetch } = useQuery(
+    ["company", category],
+    () =>
+      fetch(`${BASE_URL}/company/${name}?category=${category}`, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+        },
+      }).then((res) => res.json())
   );
   document.title = `Talgtna | ${name}`;
 
@@ -40,6 +61,7 @@ function Company() {
 
   const company: Company = data?.company ?? {};
   const products: Product[] = data?.products ?? [];
+  const categories: Category[] = data?.categories ?? [];
 
   if (data?.favorites) {
     products.forEach((product) => {
@@ -65,7 +87,29 @@ function Company() {
           {company.name}
         </h1>
       </div>
+      <div className="w-full overflow-x-scroll grid place-items-center">
+        <div className="categories w-full flex items-center gap-2 md:gap-5 px-2 md:px-5 my-3 justify-center">
+          <Link
+            to={`/company/${name}`}
+            className="bg-primary text-nowrap shadow-md text-white px-2 py-2 rounded-md"
+          >
+            الكل
+          </Link>
+          {categories.map((category: Category) => (
+            <Link
+              to={`/company/${name}?category=${category.name}`}
+              key={category.id}
+              className="bg-primary text-nowrap shadow-md text-white px-2 py-2 rounded-md"
+            >
+              {category.name}
+            </Link>
+          ))}
+        </div>
+      </div>
       <div className="products grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-5">
+        {products.length === 0 && (
+          <p className="col-span-4 text-center">لا يوجد منتجات</p>
+        )}
         {products.map((product: Product) => (
           <ProductCard
             key={product.id}

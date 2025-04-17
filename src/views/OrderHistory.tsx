@@ -17,27 +17,27 @@ interface Order {
   id: string;
   created_at: string;
   method: string;
+  city: string;
   discount: string;
   delivered: number;
-  paid: number;
+  processing: number;
   total: number;
   products: OrderProduct[];
 }
 
 function OrderHistory() {
-  const token = useAuthStore((state) => state.token);
-  const isAuth = useAuthStore((state) => state.isAuthenticated);
+  const authStore = useAuthStore((state) => state);
   const navigate = useNavigate();
 
-  if (!isAuth) {
+  if (!authStore.isAuthenticated) {
     toast.error("يجب عليك تسجيل الدخول");
     navigate("/");
   }
 
-  const { isLoading, error, data } = useQuery("history", () =>
+  const { data, isLoading, error } = useQuery("history", () =>
     fetch(`${BASE_URL}/order/history`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${authStore.token}`,
       },
     }).then((res) => res.json())
   );
@@ -61,7 +61,7 @@ function OrderHistory() {
     <>
       <div className="w-full h-auto grid place-items-center my-7 gap-5">
         {data?.orders.map((order: Order) => (
-          <OrderCard key={order.id} order={order} />
+          <OrderCard key={order.id} order={order} cities={data.cities} />
         ))}
       </div>
     </>
