@@ -1,6 +1,5 @@
-import { Button } from "flowbite-react";
 import { useCartStore } from "../store/CartStore";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 export default function CartToast() {
@@ -23,9 +22,9 @@ export default function CartToast() {
   return showToast ? (
     <div className="fixed bottom-10 right-4 z-30 bg-white p-3 shadow-lg rounded flex flex-col gap-3">
       <p>عدد المنتجات في سلة التسوق: {cartStore.getTotalQuantity()}</p>
-      <Button href="/cart" className="bg-primary font-bold">
+      <Link to="/cart" className="bg-primary font-bold p-2 rounded text-white">
         انتقل إلى عربة التسوق لإكمال الطلب
-      </Button>
+      </Link>
     </div>
   ) : null;
 }

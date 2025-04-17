@@ -1,15 +1,8 @@
 import { Link } from "react-router-dom";
 import { useCartStore } from "../store/CartStore";
-import { IMAGE_BASE_URL } from "../store/config";
+import { IMAGE_BASE_URL } from "../config/config";
 import { FaRegTrashAlt, FaPlus, FaMinus } from "react-icons/fa";
 
-interface CartProduct {
-  id: number;
-  quantity: number;
-  name: string;
-  image: string;
-  price: number;
-}
 function CartItem({ product }: { product: CartProduct }) {
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const incrementQuantity = useCartStore((state) => state.incrementQuantity);
@@ -30,35 +23,37 @@ function CartItem({ product }: { product: CartProduct }) {
           اختر الكمية:
         </label>
         <div className="flex items-center justify-between md:order-3 md:justify-end">
-          <div className="flex items-center">
-            <button
-              type="button"
-              onClick={() => decrementQuantity(product.id)}
-              id="decrement-button-4"
-              data-input-counter-decrement="counter-input-4"
-              className="inline-flex  h-8 w-8 shrink-0 items-center justify-center rounded-md border border-primary-300 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
-            >
-              <FaMinus />
-            </button>
-            <p
-              id="counter-input-4"
-              className="w-10 shrink-0 border-0 bg-transparent text-center text-md font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
-            >
-              {product.quantity}
-            </p>
-            <button
-              type="button"
-              onClick={() => incrementQuantity(product.id)}
-              id="increment-button-4"
-              data-input-counter-increment="counter-input-4"
-              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border  border-primary-300 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
-            >
-              <FaPlus />
-            </button>
-          </div>
+          {!product.with_coins && (
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={() => decrementQuantity(product.id)}
+                id="decrement-button-4"
+                data-input-counter-decrement="counter-input-4"
+                className="inline-flex  h-8 w-8 shrink-0 items-center justify-center rounded-md border border-primary-300 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
+              >
+                <FaMinus />
+              </button>
+              <p
+                id="counter-input-4"
+                className="w-10 shrink-0 border-0 bg-transparent text-center text-md font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
+              >
+                {product.quantity}
+              </p>
+              <button
+                type="button"
+                onClick={() => incrementQuantity(product.id)}
+                id="increment-button-4"
+                data-input-counter-increment="counter-input-4"
+                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border  border-primary-300 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
+              >
+                <FaPlus />
+              </button>
+            </div>
+          )}
           <div className="text-end md:order-4 md:w-32">
             <p className="text-base font-bold text-gray-900 dark:text-white">
-              {product.price} ج
+              {product.price} {product.with_coins ? "نقطة" : "جنيه"}
             </p>
           </div>
         </div>

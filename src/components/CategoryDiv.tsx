@@ -1,11 +1,5 @@
 import { Link } from "react-router-dom";
-import { IMAGE_BASE_URL } from "../store/config";
-
-interface Category {
-  id: number;
-  name: string;
-  image: string;
-}
+import { IMAGE_BASE_URL } from "../config/config";
 
 export function CategoryDiv(category: Category) {
   return (

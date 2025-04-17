@@ -1,6 +1,6 @@
 import { useMutation } from "react-query";
 import { useAuthStore } from "../store/AuthStore";
-import { BASE_URL } from "../store/config";
+import { BASE_URL } from "../config/config";
 import { toast } from "sonner";
 import { useCartStore } from "../store/CartStore";
 

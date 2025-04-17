@@ -3,14 +3,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { IMAGE_BASE_URL } from "../store/config";
-
-interface Offer {
-  id: number;
-  product: number;
-  image: string;
-  company: string;
-}
+import { IMAGE_BASE_URL } from "../config/config";
 
 function CarouselComponent({ offers }: { offers: Offer[] }) {
   const [width, setWidth] = useState(window.innerWidth);

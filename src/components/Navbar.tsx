@@ -1,20 +1,65 @@
 import { Link } from "react-router-dom";
 import logoImg from "../assets/logo.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCartStore } from "../store/CartStore";
 import { useAuthStore } from "../store/AuthStore";
 import { IoIosCart, IoIosMenu, IoIosHeart, IoIosSearch } from "react-icons/io";
 import { Badge } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
+import { FaDownload } from "react-icons/fa";
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+}
 
 function Navbar() {
   const [isActive, setIsActive] = useState(false);
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const isAuth = useAuthStore((state) => state.isAuthenticated);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+  const isIos = /iphone|ipad|ipod/.test(
+    window.navigator.userAgent.toLowerCase()
+  );
+  const isInStandaloneMode =
+    "standalone" in window.navigator && (window.navigator as any).standalone;
+  const authStore = useAuthStore((state) => state);
   const totalQuantity = useCartStore((state) => state.getTotalQuantity());
-  const favorites = useAuthStore((state) => state.favorites);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      console.log("beforeinstallprompt event fired");
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+      setIsInstallable(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  useEffect(() => {
+    if (isIos && !isInStandaloneMode) {
+      setIsInstallable(true);
+    }
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") {
+      console.log("User accepted the PWA installation");
+    } else {
+      console.log("User dismissed the PWA installation");
+    }
+    setDeferredPrompt(null); // Clear the prompt
+    setIsInstallable(false);
+  };
 
   const handelSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -22,6 +67,11 @@ function Navbar() {
     setSearchOpen(false);
     setQuery("");
     navigate(`/search?query=${query}`);
+  };
+
+  const handelLogout = () => {
+    authStore.logout();
+    navigate("/");
   };
 
   return (
@@ -43,21 +93,26 @@ function Navbar() {
           <IoIosCart className="text-3xl" />
           <p className="text-3xl sr-only">سلة الشراء</p>
         </Link>
-        {isAuth ? (
+        {authStore.isAuthenticated ? (
           <Link
             onClick={() => setIsActive(false)}
             to="/favorites"
             className="relative"
           >
             <IoIosHeart className="text-3xl" />
-            {favorites > 0 ? (
+            {authStore.favorites > 0 ? (
               <Badge className="absolute -top-2 -right-2 bg-primary text-white font-bold">
-                {favorites}
+                {authStore.favorites}
               </Badge>
             ) : null}
             <p className="text-3xl sr-only">المفضلة</p>
           </Link>
         ) : null}
+        {isInstallable && (
+          <button onClick={handleInstallClick}>
+            <FaDownload className="text-3xl" />
+          </button>
+        )}
         <button
           id="searchBtn"
           className="md:hidden"
@@ -102,7 +157,22 @@ function Navbar() {
         >
           الصفحة الرئيسية
         </Link>
-        {isAuth ? (
+        {isInstallable && (
+          <button
+            id="searchBtn"
+            className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded flex gap-2 items-center "
+            onClick={handleInstallClick}
+          >
+            تثبيت التطبيق <FaDownload className="text-xl" />
+          </button>
+        )}
+        {isIos && isInstallable && (
+          <div className="p-3 bg-yellow-200 text-sm rounded shadow">
+            لتثبيت التطبيق، اضغط على <strong>مشاركة</strong> ثم اختر{" "}
+            <strong>"إضافة إلى الشاشة الرئيسية"</strong>.
+          </div>
+        )}
+        {authStore.isAuthenticated ? (
           <Link
             onClick={() => setIsActive(false)}
             to="/order/history"
@@ -132,6 +202,14 @@ function Navbar() {
         >
           الشكوي
         </Link>
+        {authStore.isAuthenticated && (
+          <button
+            onClick={handelLogout}
+            className="w-full py-2 duration-300 hover:bg-primary hover:pr-1 hover:text-white rounded"
+          >
+            تسجيل الخروج
+          </button>
+        )}
       </div>
       <div
         className={`h-14 bg-white duration-300 w-full absolute ${

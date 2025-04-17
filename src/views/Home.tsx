@@ -1,30 +1,12 @@
 import { useQuery } from "react-query";
 import CarouselComponent from "../components/Carousel";
-import { BASE_URL } from "../store/config";
+import { BASE_URL, IMAGE_BASE_URL } from "../config/config";
 import { CategoryDiv } from "../components/CategoryDiv";
 import { Link } from "react-router-dom";
-
-interface Category {
-  id: number;
-  name: string;
-  image: string;
-}
-
-interface Company {
-  id: number;
-  name: string;
-  image: string;
-  soon: number;
-}
-
-interface Offer {
-  id: number;
-  product: number;
-  image: string;
-  company: string;
-}
+import { useAuthStore } from "../store/AuthStore";
 
 function Home() {
+  const authStore = useAuthStore();
   const { isLoading, error, data } = useQuery("home", () =>
     fetch(`${BASE_URL}`).then((res) => res.json())
   );
@@ -60,6 +42,21 @@ function Home() {
           </div>
         </div>
         <div className="my-6 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-5 px-2 md:px-5 place-items-center">
+          {authStore.isAuthenticated && (
+            <Link
+              to={`/coin_store`}
+              className="bg-white h-auto shadow-md rounded-md w-full overflow-clip"
+            >
+              <img
+                src={`${IMAGE_BASE_URL}/img/category/نقاط.webp`}
+                alt="متجر النقاط"
+                className="w-full h-[115px] rounded-md"
+              />
+              <p className="text-center my-1 text-primary text-xs sm:text-sm">
+                متجر النقاط
+              </p>
+            </Link>
+          )}
           {categories.map((category: Category) => (
             <CategoryDiv key={category.id} {...category} />
           ))}

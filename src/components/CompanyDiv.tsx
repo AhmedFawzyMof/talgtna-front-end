@@ -1,12 +1,5 @@
 import { Link } from "react-router-dom";
-import { IMAGE_BASE_URL } from "../store/config";
-
-interface Company {
-  id: number;
-  name: string;
-  image: string;
-  soon: number;
-}
+import { IMAGE_BASE_URL } from "../config/config";
 
 function CompanyDiv(company: Company) {
   if (company.soon === 1)

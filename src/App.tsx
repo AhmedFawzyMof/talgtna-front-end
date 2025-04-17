@@ -23,6 +23,7 @@ import { useCartStore } from "./store/CartStore";
 import { Toaster } from "sonner";
 import Search from "./views/Search";
 import CartToast from "./components/CartToast";
+import CoinStore from "./views/CoinStore";
 
 const queryClient = new QueryClient();
 
@@ -32,7 +33,6 @@ function Layout() {
   const totalQuantity = cartStore.getTotalQuantity();
 
   authStore.initlize();
-  cartStore.initlize();
 
   return (
     <>
@@ -101,6 +101,10 @@ const router = createBrowserRouter([
       {
         path: "cart",
         element: <Cart />,
+      },
+      {
+        path: "coin_store",
+        element: <CoinStore />,
       },
       {
         path: "search",

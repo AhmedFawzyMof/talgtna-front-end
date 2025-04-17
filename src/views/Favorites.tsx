@@ -3,20 +3,7 @@ import ProductCard from "../components/Product";
 import { useAuthStore } from "../store/AuthStore";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { BASE_URL } from "../store/config";
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-  company: string;
-  description: string;
-  offer: number;
-  available: number;
-  isFavorite: boolean;
-}
+import { BASE_URL } from "../config/config";
 
 function Favorites() {
   const authStore = useAuthStore((state) => state);

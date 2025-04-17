@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/AuthStore";
 import { useMutation } from "react-query";
-import { BASE_URL } from "../store/config";
+import { BASE_URL } from "../config/config";
 import { toast } from "sonner";
 import { useCartStore } from "../store/CartStore";
 import { useNavigate } from "react-router-dom";

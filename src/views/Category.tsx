@@ -2,41 +2,9 @@ import { useQuery } from "react-query";
 import CarouselComponent from "../components/Carousel";
 import { Link, useParams } from "react-router-dom";
 import ProductCard from "../components/Product";
-import { BASE_URL } from "../store/config";
+import { BASE_URL } from "../config/config";
 import { useAuthStore } from "../store/AuthStore";
 
-interface Company {
-  id: number;
-  name: string;
-  image: string;
-  soon: number;
-}
-
-interface Category {
-  id: number;
-  name: string;
-  image: string;
-}
-
-interface Offer {
-  id: number;
-  product: number;
-  image: string;
-  company: string;
-}
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-  company: string;
-  description: string;
-  offer: number;
-  available: number;
-  isFavorite: boolean;
-}
 function Category() {
   const authStore = useAuthStore((state) => state);
   const { name } = useParams<{ name: string }>();

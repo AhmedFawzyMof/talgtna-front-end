@@ -3,20 +3,8 @@ import { useParams } from "react-router-dom";
 import { useCartStore } from "../store/CartStore";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/AuthStore";
-import { BASE_URL, IMAGE_BASE_URL } from "../store/config";
+import { BASE_URL, IMAGE_BASE_URL } from "../config/config";
 import { FaRegHeart, FaPlus, FaMinus } from "react-icons/fa";
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-  company: string;
-  description: string;
-  offer: number;
-  available: number;
-}
 
 function ProductView() {
   const { id } = useParams();
@@ -80,6 +68,7 @@ function ProductView() {
     name: product.name,
     image: product.image,
     price: product.price,
+    with_coins: false,
   };
 
   return (

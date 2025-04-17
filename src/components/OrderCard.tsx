@@ -1,24 +1,9 @@
 import { useEffect, useState } from "react";
 
-interface OrderProduct {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-}
-
-interface Order {
-  id: string;
-  created_at: string;
-  method: string;
-  city: string;
-  discount: string;
-  delivered: number;
-  processing: number;
-  total: number;
-  products: OrderProduct[];
-}
+const METHODS = {
+  cash_on_delivery: "نقدى",
+  digital_wallet: "محفظة رقمية",
+} as const;
 
 function OrderCard({ order, cities }: { order: Order; cities: any }) {
   const discount = JSON.parse(order.discount);
@@ -28,7 +13,7 @@ function OrderCard({ order, cities }: { order: Order; cities: any }) {
   useEffect(() => {
     let sum = 0;
     order.products.forEach((product) => {
-      sum += product.price * product.quantity;
+      if (!product.with_coins) sum += product.price * product.quantity;
     });
 
     const city = cities.find((city: any) => city.city === order.city);
@@ -58,7 +43,7 @@ function OrderCard({ order, cities }: { order: Order; cities: any }) {
         <div className="grid grid-cols-1 gap-1 p-3 even:bg-gray-50 sm:grid-cols-3 sm:gap-4">
           <dt className="font-bold  text-primary">طريقة الدفع</dt>
           <dd className="text-gray-700 sm:col-span-2 capitalize">
-            {order.method === "creditcard_on_delivery" ? "Credit Card" : "Cash"}
+            {METHODS[order.method as keyof typeof METHODS]}
           </dd>
         </div>
         <div className="grid grid-cols-1 gap-1 p-3 even:bg-gray-50 sm:grid-cols-3 sm:gap-4">
@@ -90,7 +75,9 @@ function OrderCard({ order, cities }: { order: Order; cities: any }) {
                     <td className="text-center">{product.price}</td>
                     <td className="text-center">{product.quantity}</td>
                     <td className="text-center">
-                      {product.quantity * product.price}
+                      {!product.with_coins
+                        ? product.quantity * product.price
+                        : 0}
                     </td>
                   </tr>
                 ))}

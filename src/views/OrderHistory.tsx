@@ -3,27 +3,7 @@ import { useAuthStore } from "../store/AuthStore";
 import { toast } from "sonner";
 import { useQuery } from "react-query";
 import OrderCard from "../components/OrderCard";
-import { BASE_URL } from "../store/config";
-
-interface OrderProduct {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-}
-
-interface Order {
-  id: string;
-  created_at: string;
-  method: string;
-  city: string;
-  discount: string;
-  delivered: number;
-  processing: number;
-  total: number;
-  products: OrderProduct[];
-}
+import { BASE_URL } from "../config/config";
 
 function OrderHistory() {
   const authStore = useAuthStore((state) => state);

@@ -3,7 +3,7 @@ import { useAuthStore } from "../store/AuthStore";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import Coupon from "../components/Coupon";
-import { BASE_URL } from "../store/config";
+import { BASE_URL } from "../config/config";
 
 function Coupons() {
   document.title = `Talgtna | كوبونات`;

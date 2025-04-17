@@ -1,21 +1,8 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { BASE_URL } from "../store/config";
+import { BASE_URL } from "../config/config";
 import ProductCard from "../components/Product";
 import { useAuthStore } from "../store/AuthStore";
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-  company: string;
-  description: string;
-  offer: number;
-  available: number;
-  isFavorite: boolean;
-}
 
 function Search() {
   const [query, setQuery] = useState(

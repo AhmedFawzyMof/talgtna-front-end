@@ -3,7 +3,7 @@ import { useCartStore } from "../store/CartStore";
 import { useNavigate } from "react-router-dom";
 import OrderForm from "../components/OrderForm";
 import { useQuery } from "react-query";
-import { BASE_URL } from "../store/config";
+import { BASE_URL } from "../config/config";
 
 export default function Order() {
   const cartStore = useCartStore((state) => state);
@@ -26,10 +26,12 @@ export default function Order() {
     }
 
     setSubtotal(
-      cartStore.cart.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      )
+      cartStore.cart.reduce((total, item) => {
+        if (!item.with_coins) {
+          return total + item.price * item.quantity;
+        }
+        return total;
+      }, 0)
     );
   }, [cartStore.cart, totalQuantity]);
 

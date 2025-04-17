@@ -4,21 +4,8 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/AuthStore";
 import { useMutation } from "react-query";
 import { toast } from "sonner";
-import { BASE_URL, IMAGE_BASE_URL } from "../store/config";
+import { BASE_URL, IMAGE_BASE_URL } from "../config/config";
 import { FaCartPlus, FaPlus, FaMinus, FaHeart } from "react-icons/fa6";
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-  company: string;
-  description: string;
-  offer: number;
-  available: number;
-  isFavorite: boolean;
-}
 
 function ProductCard({
   product,
@@ -93,6 +80,7 @@ function ProductCard({
     name: product.name,
     image: product.image,
     price: product.price,
+    with_coins: false,
   };
 
   const handelIncrement = () => {

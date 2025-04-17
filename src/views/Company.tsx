@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import ProductCard from "../components/Product";
-import { BASE_URL, IMAGE_BASE_URL } from "../store/config";
+import { BASE_URL, IMAGE_BASE_URL } from "../config/config";
 import { useAuthStore } from "../store/AuthStore";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -9,31 +9,7 @@ import { useEffect, useState } from "react";
 function useUrlQuery() {
   return new URLSearchParams(useLocation().search);
 }
-interface Company {
-  id: number;
-  image: string;
-  name: string;
-  soon: number;
-}
 
-interface Category {
-  id: number;
-  name: string;
-  image: string;
-}
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-  company: string;
-  description: string;
-  offer: number;
-  available: number;
-  isFavorite: boolean;
-}
 function Company() {
   const authStore = useAuthStore((state) => state);
   const { name } = useParams<{ name: string }>();
