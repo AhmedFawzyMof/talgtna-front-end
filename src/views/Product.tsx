@@ -1,34 +1,38 @@
-import { useQuery } from "react-query";
-import { useParams } from "react-router-dom";
+import { useMutation, useQuery } from "react-query";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCartStore } from "../store/CartStore";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/AuthStore";
 import { BASE_URL, IMAGE_BASE_URL } from "../config/config";
-import { FaRegHeart, FaPlus, FaMinus } from "react-icons/fa";
+import { FaRegHeart, FaHeart, FaPlus, FaMinus } from "react-icons/fa";
+import { toast } from "sonner";
 
 function ProductView() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const authStore = useAuthStore((state) => state);
-  const cart = useCartStore((state) => state.cart);
-  const addToCart = useCartStore((state) => state.addToCart);
+  const cartStore = useCartStore((state) => state);
   const incrementQuantity = useCartStore((state) => state.incrementQuantity);
   const decrementQuantity = useCartStore((state) => state.decrementQuantity);
+  const [product, setProduct] = useState<Product>({} as Product);
   const [quantity, setQuantity] = useState(1);
-  const totalQuantity = useCartStore((state) => state.getTotalQuantity());
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const coin_store = params.get("coin_store");
 
   useEffect(() => {
     const ID = parseInt(id as string);
-    const item = cart.find((item) => item.id === ID);
+    const item = cartStore.cart.find((item) => item.id === ID);
     if (item) {
       setQuantity(item.quantity);
     }
-  }, [cart, id, totalQuantity]);
+  }, [cartStore.cart, id, cartStore.getTotalQuantity()]);
 
   const handelIncrement = () => {
     const ID = parseInt(id as string);
-    const item = cart.find((item) => item.id === ID);
+    const item = cartStore.cart.find((item) => item.id === ID);
 
-    if (item) {
+    if (item && product.id) {
       incrementQuantity(product.id);
     }
 
@@ -39,9 +43,9 @@ function ProductView() {
 
   const handelDecrement = () => {
     const ID = parseInt(id as string);
-    const item = cart.find((item) => item.id === ID);
+    const item = cartStore.cart.find((item) => item.id === ID);
 
-    if (item) {
+    if (item && product.id) {
       decrementQuantity(product.id);
     }
 
@@ -50,15 +54,70 @@ function ProductView() {
     }
   };
 
-  const { isLoading, error, data } = useQuery("home", () =>
-    fetch(`${BASE_URL}/products/${id}`).then((res) => res.json())
+  const { isLoading, error, data, refetch } = useQuery(
+    ["product", id, coin_store],
+    () =>
+      fetch(`${BASE_URL}/products/${id}?coin_store=${coin_store}`, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+        },
+      }).then((res) => res.json())
   );
+
+  const mutation = useMutation(
+    async (data: unknown) => {
+      const response = await fetch(`${BASE_URL}/user/fav`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authStore.token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        toast.error("فشلت في الإضافة إلى المفضلة");
+      }
+      const responseData = await response.json();
+      if (responseData.success) {
+        toast.success("تمت الإضافة إلى المفضلة بنجاح");
+        if (typeof refetch === "function") refetch();
+        authStore.setFavorites();
+      } else {
+        toast.error("المنتج موجود بالفعل في المفضلة");
+      }
+    },
+    {
+      onError: () => {
+        toast.error("فشلت في الإضافة إلى المفضلة");
+      },
+    }
+  );
+
+  useEffect(() => {
+    if (data && data.redirect) {
+      navigate("/");
+    }
+    if (data && data.product) {
+      setProduct(data.product);
+    }
+  }, [data]);
 
   if (isLoading) return <p>Loading...</p>;
 
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
 
-  const product: Product = data?.product ?? {};
+  if (!product || !product.id) {
+    return <p>Product not found.</p>;
+  }
+
+  const addToFavourite = () => {
+    if (authStore.isAuthenticated) {
+      mutation.mutate({ product_id: product.id });
+    } else {
+      toast.error("يجب عليك تسجيل الدخول");
+    }
+  };
 
   document.title = `Talgtna | ${product.name}`;
 
@@ -68,8 +127,10 @@ function ProductView() {
     name: product.name,
     image: product.image,
     price: product.price,
-    with_coins: false,
+    with_coins: coin_store === "true",
   };
+
+  console.log(data);
 
   return (
     <>
@@ -89,33 +150,42 @@ function ProductView() {
                 <p className="text-primary font-bold">{product.price} ج</p>
               </div>
             ) : (
-              <p>{product.price} ج</p>
+              <p>
+                {coin_store === "true"
+                  ? `${product.price * 50} نقط`
+                  : product.price + " ج"}
+              </p>
             )}
             <div className="cart grid gap-2 md:gap-5">
-              <div className="buttons flex border border-primary w-full md:w-64 items-center justify-between h-9 rounded gap-2 md:gap-5">
-                <button
-                  onClick={handelIncrement}
-                  className="w-full text-xl grid place-items-center cursor-pointer h-full duration-300 hover:bg-primary hover:text-white transition ease-in-out"
-                >
-                  <FaPlus />
-                </button>
-                <p className="Quantity">{quantity}</p>
-                <button
-                  onClick={handelDecrement}
-                  className="w-full text-xl grid place-items-center cursor-pointer h-full duration-300 hover:bg-primary hover:text-white transition ease-in-out"
-                >
-                  <FaMinus />
-                </button>
-              </div>
+              {coin_store !== "true" && (
+                <div className="buttons flex border border-primary w-full md:w-64 items-center justify-between h-9 rounded gap-2 md:gap-5">
+                  <button
+                    onClick={handelIncrement}
+                    className="w-full text-xl grid place-items-center cursor-pointer h-full duration-300 hover:bg-primary hover:text-white transition ease-in-out"
+                  >
+                    <FaPlus />
+                  </button>
+                  <p className="Quantity">{quantity}</p>
+                  <button
+                    onClick={handelDecrement}
+                    className="w-full text-xl grid place-items-center cursor-pointer h-full duration-300 hover:bg-primary hover:text-white transition ease-in-out"
+                  >
+                    <FaMinus />
+                  </button>
+                </div>
+              )}
               <button
-                onClick={() => addToCart(CartProduct)}
+                onClick={() => cartStore.addToCart(CartProduct)}
                 className="w-full md:w-64 h-9 rounded bg-primary text-white"
               >
                 اضافة الى السلة
               </button>
-              {authStore.token ? (
-                <button className="absolute top-0 left-0 w-11 h-11 bg-primary text-white rounded grid place-items-center shadow-xl">
-                  <FaRegHeart />
+              {authStore.isAuthenticated && coin_store !== "true" ? (
+                <button
+                  onClick={addToFavourite}
+                  className="absolute top-0 left-0 w-11 h-11 bg-primary text-white rounded grid place-items-center shadow-xl"
+                >
+                  {data.favorites ? <FaHeart /> : <FaRegHeart />}
                 </button>
               ) : null}
             </div>

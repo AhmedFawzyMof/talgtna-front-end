@@ -31,7 +31,6 @@ function Navbar() {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      console.log("beforeinstallprompt event fired");
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setIsInstallable(true);
@@ -51,13 +50,9 @@ function Navbar() {
     if (!deferredPrompt) return;
 
     deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
-      console.log("User accepted the PWA installation");
-    } else {
-      console.log("User dismissed the PWA installation");
-    }
-    setDeferredPrompt(null); // Clear the prompt
+    await deferredPrompt.userChoice;
+
+    setDeferredPrompt(null);
     setIsInstallable(false);
   };
 

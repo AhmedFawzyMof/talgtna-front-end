@@ -53,55 +53,75 @@ export default function CoinStore() {
         {products.length === 0 && (
           <p className="col-span-4 text-center">لا يوجد منتجات</p>
         )}
-        {products.map((product: Product) => (
-          <div
-            key={product.id}
-            className="block rounded-lg p-4 shadow-lg bg-white relative"
-          >
-            {cartStore.coins > product.price * 50 &&
-              cartStore.coins >= 3000 && (
-                <button
-                  onClick={() =>
-                    handelOrderNow({
-                      id: product.id,
-                      quantity: 1,
-                      name: product.name,
-                      image: product.image,
-                      price: product.price * 50,
-                      with_coins: true,
-                    })
-                  }
-                  className="absolute top-5 bg-primary-500 p-2 rounded-md text-white shadow"
-                >
-                  اشتري الان
-                </button>
-              )}
-            <Link to={`/products/${product.id}`}>
-              <img
-                alt={product.name}
-                src={IMAGE_BASE_URL + product.image}
-                className="h-56 w-full rounded-md object-cover"
-              />
-            </Link>
-            <Link to={`/products/${product.id}`}>
-              <div className="mt-2">
-                <dl>
+        {products.map(
+          (product: Product) =>
+            product.available === 0 && (
+              <div
+                key={product.id}
+                className="block rounded-lg p-4 shadow-lg bg-white relative"
+              >
+                {cartStore.coins <= 3000 && (
                   <div>
-                    <dt className="sr-only">Price</dt>
-                    <dd className="text-sm text-primary">
-                      {product.price * 50} نقط
-                    </dd>
+                    <p className="w-full text-center absolute z-50 text-primary font-bold top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2">
+                      {cartStore.coins < 3000 &&
+                        "يجب أن تكون نقاطك أكثر من 3000"}
+                    </p>
+                    <div className="absolute top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2 rounded bg-black w-full h-full opacity-50 grid place-items-center"></div>
                   </div>
+                )}
+                {cartStore.coins < product.price * 50 && (
                   <div>
-                    <dt className="sr-only">Product Name</dt>
+                    <p className="w-full text-center absolute z-50 text-primary font-bold top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2">
+                      نقاطك ليست كافية
+                    </p>
+                    <div className="absolute top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2 rounded bg-black w-full h-full opacity-50 grid place-items-center"></div>
+                  </div>
+                )}
+                {cartStore.coins > product.price * 50 &&
+                  cartStore.coins >= 3000 && (
+                    <button
+                      onClick={() =>
+                        handelOrderNow({
+                          id: product.id,
+                          quantity: 1,
+                          name: product.name,
+                          image: product.image,
+                          price: product.price * 50,
+                          with_coins: true,
+                        })
+                      }
+                      className="absolute top-5 bg-primary-500 p-2 rounded-md text-white shadow"
+                    >
+                      اشتري الان
+                    </button>
+                  )}
+                <Link to={`/products/${product.id}?coin_store=true`}>
+                  <img
+                    alt={product.name}
+                    src={IMAGE_BASE_URL + product.image}
+                    className="h-56 w-full rounded-md object-cover"
+                  />
+                </Link>
+                <Link to={`/products/${product.id}?coin_store=true`}>
+                  <div className="mt-2">
+                    <dl>
+                      <div>
+                        <dt className="sr-only">Price</dt>
+                        <dd className="text-sm text-primary">
+                          {product.price * 50} نقط
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="sr-only">Product Name</dt>
 
-                    <dd className="font-medium">{product.name}</dd>
+                        <dd className="font-medium">{product.name}</dd>
+                      </div>
+                    </dl>
                   </div>
-                </dl>
+                </Link>
               </div>
-            </Link>
-          </div>
-        ))}
+            )
+        )}
       </div>
     </>
   );
