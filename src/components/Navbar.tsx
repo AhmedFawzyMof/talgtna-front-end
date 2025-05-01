@@ -23,7 +23,7 @@ export default function Navbar() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
-  const [showIosInstallGuide, setShowIosInstallGuide] = useState(true);
+  const [showIosInstallGuide, setShowIosInstallGuide] = useState(false);
   const isIos = /iphone|ipad|ipod/.test(
     window.navigator.userAgent.toLowerCase()
   );
@@ -174,7 +174,7 @@ export default function Navbar() {
                 الصفحة الرئيسية
               </Link>
             </li>
-            {isInstallable && (
+            {isInstallable && !showIosInstallGuide && (
               <li>
                 <button
                   onClick={handleInstallClick}
@@ -209,14 +209,6 @@ export default function Navbar() {
                 شكوى
               </Link>
             </li>
-            <li>
-              <Link
-                to="/policy"
-                className="block rounded-lg bg-primary-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-primary-400 hover:text-white duration-300 ease-in-out"
-              >
-                سياسة الخصوصية
-              </Link>
-            </li>
 
             {authStore.isAuthenticated && (
               <>
@@ -238,7 +230,7 @@ export default function Navbar() {
                 </li>
               </>
             )}
-            {showIosInstallGuide && (
+            {showIosInstallGuide && !isInstallable && (
               <li className="bg-white border border-primary-200 rounded-lg p-3 text-sm text-gray-700 space-y-3">
                 <p className="font-semibold text-primary-600 text-center">
                   تثبيت التطبيق (Safari فقط)
