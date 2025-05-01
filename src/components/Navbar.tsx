@@ -23,6 +23,7 @@ export default function Navbar() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
+  const [showIosInstallGuide, setShowIosInstallGuide] = useState(true);
   const isIos = /iphone|ipad|ipod/.test(
     window.navigator.userAgent.toLowerCase()
   );
@@ -60,8 +61,12 @@ export default function Navbar() {
   };
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
+    if (isIos && !isInStandaloneMode) {
+      setShowIosInstallGuide(true);
+      return;
+    }
 
+    if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === "accepted") {
@@ -69,7 +74,7 @@ export default function Navbar() {
     } else {
       console.log("User dismissed the PWA installation");
     }
-    setDeferredPrompt(null); // Clear the prompt
+    setDeferredPrompt(null);
     setIsInstallable(false);
   };
 
@@ -94,7 +99,9 @@ export default function Navbar() {
             className="bg-primary text-white py-2 px-2 rounded shadow"
           >
             <span className="sr-only">القائمة</span>
-            <MdMenuOpen className="text-xl" />
+            <MdMenuOpen
+              className={`text-xl ${isActive ? "rotate-180" : ""} `}
+            />
           </button>
           <Link
             to="/cart"
@@ -138,8 +145,8 @@ export default function Navbar() {
           isActive ? "translate-x-0" : "translate-x-full"
         } duration-300 ease-in-out flex h-screen flex-col justify-between border-e border-gray-100 bg-white`}
       >
-        <div className="px-4 py-6">
-          <ul className="mt-6 space-y-3">
+        <div className="px-4 py-3">
+          <ul className="mt-3 space-y-3">
             <li>
               <form onSubmit={handelSubmit} className="relative">
                 <input
@@ -210,6 +217,7 @@ export default function Navbar() {
                 سياسة الخصوصية
               </Link>
             </li>
+
             {authStore.isAuthenticated && (
               <>
                 <li>
@@ -229,6 +237,52 @@ export default function Navbar() {
                   </button>
                 </li>
               </>
+            )}
+            {showIosInstallGuide && (
+              <li className="bg-white border border-primary-200 rounded-lg p-3 text-sm text-gray-700 space-y-3">
+                <p className="font-semibold text-primary-600 text-center">
+                  تثبيت التطبيق (Safari فقط)
+                </p>
+
+                <p>
+                  لتثبيت التطبيق على جهازك iPhone أو iPad، تأكد أنك تستخدم{" "}
+                  <strong>متصفح Safari</strong> واتبع الخطوات التالية:
+                </p>
+
+                <ul className="list-disc list-inside text-right text-gray-600 space-y-1">
+                  <li>
+                    اضغط على زر <strong>المشاركة</strong> في أسفل المتصفح.
+                  </li>
+                  <li>
+                    اختر <strong>إضافة إلى الشاشة الرئيسية</strong>.
+                  </li>
+                </ul>
+
+                <p className="font-semibold text-primary-600 text-center">
+                  ملاحظات هامة:
+                </p>
+                <ul className="list-disc list-inside text-right text-gray-600 space-y-1 text-xs">
+                  <li>
+                    تأكد أن مساحة التخزين في جهازك كافية، لأن امتلاء الذاكرة قد
+                    يمنع ظهور خيار الإضافة.
+                  </li>
+                  <li>
+                    وجود عدد كبير جداً من التطبيقات المثبتة قد يؤثر على إمكانية
+                    إضافة التطبيق.
+                  </li>
+                  <li>
+                    تحقق من إعدادات الجهاز، ولا توجد قيود تمنع تثبيت التطبيقات
+                    من المتصفح.
+                  </li>
+                </ul>
+
+                <button
+                  onClick={() => setShowIosInstallGuide(false)}
+                  className="bg-primary text-white py-1 px-3 rounded shadow text-xs block mx-auto mt-2"
+                >
+                  فهمت
+                </button>
+              </li>
             )}
           </ul>
         </div>
