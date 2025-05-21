@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useCartStore } from "../store/CartStore";
 import CartItem from "../components/CartItem";
-import CartEmpty from "../assets/cart.png";
 import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
 import Discount from "../components/Discount";
+import { IMAGE_BASE_URL } from "../config/config";
 
 function Cart() {
   const cartStore = useCartStore((state) => state);
@@ -13,7 +13,7 @@ function Cart() {
   const totalQuantity = cartStore.getTotalQuantity();
   const discount = cartStore.discount;
 
-  document.title = "Talgtna | السلة";
+  document.title = "Talagtna | السلة";
 
   useEffect(() => {
     setSubtotal(
@@ -118,13 +118,17 @@ function Cart() {
       )}
       {cart.length === 0 && (
         <div className="w-full grid place-items-center">
-          <div className="flex items-center justify-center flex-col gap-4 mt-12 w-64 shadow-md border border-gray-200 rounded p-4">
-            <img className="h-40 w-40" src={CartEmpty} alt="empty cart" />
+          <div className="flex items-center justify-center flex-col gap-4 mt-12 w-64 py-4">
+            <img
+              className=""
+              src={`${IMAGE_BASE_URL}/img/empty-cart.png`}
+              alt="empty cart"
+            />
             <Link
               to="/"
-              className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+              className="flex items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
             >
-              مواصلة التسوق
+              تسوق الان
             </Link>
           </div>
         </div>

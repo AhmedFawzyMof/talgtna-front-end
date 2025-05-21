@@ -14,7 +14,7 @@ function OrderHistory() {
     navigate("/");
   }
 
-  const { data, isLoading, error } = useQuery("history", () =>
+  const { data, isLoading, error, refetch } = useQuery("history", () =>
     fetch(`${BASE_URL}/order/history`, {
       headers: {
         Authorization: `Bearer ${authStore.token}`,
@@ -25,7 +25,7 @@ function OrderHistory() {
   if (isLoading) return <p>Loading...</p>;
 
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
-  document.title = `Talgtna | سجل الطلبات`;
+  document.title = `Talagtna | سجل الطلبات`;
 
   if (data?.orders.length == 0) {
     return (
@@ -41,7 +41,12 @@ function OrderHistory() {
     <>
       <div className="w-full h-auto grid place-items-center my-7 gap-5">
         {data?.orders.map((order: Order) => (
-          <OrderCard key={order.id} order={order} cities={data.cities} />
+          <OrderCard
+            key={order.id}
+            order={order}
+            cities={data.cities}
+            refetch={refetch}
+          />
         ))}
       </div>
     </>

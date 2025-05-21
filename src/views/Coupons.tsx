@@ -6,7 +6,7 @@ import Coupon from "../components/Coupon";
 import { BASE_URL } from "../config/config";
 
 function Coupons() {
-  document.title = `Talgtna | كوبونات`;
+  document.title = `Talagtna | كوبونات`;
 
   const token = useAuthStore((state) => state.token);
   const isAuth = useAuthStore((state) => state.isAuthenticated);

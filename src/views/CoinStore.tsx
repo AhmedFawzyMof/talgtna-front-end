@@ -33,7 +33,7 @@ export default function CoinStore() {
 
   if (isLoading) return <p>Loading...</p>;
 
-  document.title = "Talgtna | متجر النقاط";
+  document.title = "Talagtna | متجر النقاط";
 
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
 
@@ -50,9 +50,6 @@ export default function CoinStore() {
         <span className="text-primary">{cartStore.coins}</span>
       </div>
       <div className="products grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-5">
-        {products.length === 0 && (
-          <p className="col-span-4 text-center">لا يوجد منتجات</p>
-        )}
         {products.map(
           (product: Product) =>
             product.available === 0 && (
@@ -62,7 +59,7 @@ export default function CoinStore() {
               >
                 {cartStore.coins <= 3000 && (
                   <div>
-                    <p className="w-full text-center absolute z-50 text-primary font-bold top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2">
+                    <p className="w-full text-center absolute z-30 text-primary font-bold top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2">
                       {cartStore.coins < 3000 &&
                         "يجب أن تكون نقاطك أكثر من 3000"}
                     </p>
@@ -71,7 +68,7 @@ export default function CoinStore() {
                 )}
                 {cartStore.coins < product.price * 50 && (
                   <div>
-                    <p className="w-full text-center absolute z-50 text-primary font-bold top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2">
+                    <p className="w-full text-center absolute z-30 text-primary font-bold top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2">
                       نقاطك ليست كافية
                     </p>
                     <div className="absolute top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2 rounded bg-black w-full h-full opacity-50 grid place-items-center"></div>
@@ -121,6 +118,9 @@ export default function CoinStore() {
                 </Link>
               </div>
             )
+        )}
+        {products.length === 0 && (
+          <p className="col-span-4 text-center">لا يوجد منتجات</p>
         )}
       </div>
     </>

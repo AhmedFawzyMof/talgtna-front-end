@@ -22,7 +22,7 @@ function Favorites() {
     }).then((res) => res.json())
   );
 
-  document.title = "Talgtna | المفضلات";
+  document.title = "Talagtna | المفضلات";
 
   const products: Product[] = data?.products ?? [];
 

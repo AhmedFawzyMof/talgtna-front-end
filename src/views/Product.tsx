@@ -119,7 +119,7 @@ function ProductView() {
     }
   };
 
-  document.title = `Talgtna | ${product.name}`;
+  document.title = `Talagtna | ${product.name}`;
 
   const CartProduct = {
     id: product.id,
@@ -130,79 +130,75 @@ function ProductView() {
     with_coins: coin_store === "true",
   };
 
-  console.log(data);
-
   return (
-    <>
-      <div className="grid place-items-center ">
-        <div
-          key={product.id}
-          className="product relative w-11/12 md:w-10/12 my-5 rounded p-2 shadow bg-white grid grid-cols-1 md:grid-cols-2 grid-rows-2 md:grid-rows-1 place-items-center"
-        >
-          <section id="productDitails" className="flex flex-col gap-2 md:gap-5">
-            <h1 className="text-2xl text-primary">{product.name}</h1>
-            <p className="text-gray-400">{product.description}</p>
-            {product.offer > 0 ? (
-              <div className="container">
-                <p className="line-through text-gray-500">
-                  {product.price + product.offer} ج
-                </p>
-                <p className="text-primary font-bold">{product.price} ج</p>
-              </div>
-            ) : (
-              <p>
-                {coin_store === "true"
-                  ? `${product.price * 50} نقط`
-                  : product.price + " ج"}
+    <div className="h-screen grid place-items-center">
+      <div
+        key={product.id}
+        className="product relative my-5 rounded p-2 border shadow-md grid grid-cols-1 md:grid-cols-2 grid-rows-2 md:grid-rows-1 place-items-center"
+      >
+        <section id="productDitails" className="flex flex-col gap-2 md:gap-5">
+          <h1 className="text-2xl text-primary">{product.name}</h1>
+          <p className="text-gray-400">{product.description}</p>
+          {product.offer > 0 ? (
+            <div className="container">
+              <p className="line-through text-gray-500">
+                {product.price + product.offer} ج
               </p>
-            )}
-            <div className="cart grid gap-2 md:gap-5">
-              {coin_store !== "true" && (
-                <div className="buttons flex border border-primary w-full md:w-64 items-center justify-between h-9 rounded gap-2 md:gap-5">
-                  <button
-                    onClick={handelIncrement}
-                    className="w-full text-xl grid place-items-center cursor-pointer h-full duration-300 hover:bg-primary hover:text-white transition ease-in-out"
-                  >
-                    <FaPlus />
-                  </button>
-                  <p className="Quantity">{quantity}</p>
-                  <button
-                    onClick={handelDecrement}
-                    className="w-full text-xl grid place-items-center cursor-pointer h-full duration-300 hover:bg-primary hover:text-white transition ease-in-out"
-                  >
-                    <FaMinus />
-                  </button>
-                </div>
-              )}
-              <button
-                onClick={() => cartStore.addToCart(CartProduct)}
-                className="w-full md:w-64 h-9 rounded bg-primary text-white"
-              >
-                اضافة الى السلة
-              </button>
-              {authStore.isAuthenticated && coin_store !== "true" ? (
-                <button
-                  onClick={addToFavourite}
-                  className="absolute top-0 left-0 w-11 h-11 bg-primary text-white rounded grid place-items-center shadow-xl"
-                >
-                  {data.favorites ? <FaHeart /> : <FaRegHeart />}
-                </button>
-              ) : null}
+              <p className="text-primary font-bold">{product.price} ج</p>
             </div>
-          </section>
-          <section
-            id="productImage "
-            className="grid place-items-center w-full row-start-1 md:col-start-2"
-          >
-            <img
-              src={`${IMAGE_BASE_URL}${product.image}`}
-              alt={product.name}
-              className="w-full md:w-[398px] rounded shadow"
-            />
-          </section>
-        </div>
+          ) : (
+            <p>
+              {coin_store === "true"
+                ? `${product.price * 50} نقط`
+                : product.price + " ج"}
+            </p>
+          )}
+          <div className="cart grid gap-2 md:gap-5">
+            {coin_store !== "true" && (
+              <div className="buttons flex border border-primary w-full md:w-64 items-center justify-between h-9 rounded gap-2 md:gap-5">
+                <button
+                  onClick={handelIncrement}
+                  className="w-full text-xl grid place-items-center cursor-pointer h-full duration-300 hover:bg-primary hover:text-white transition ease-in-out"
+                >
+                  <FaPlus />
+                </button>
+                <p className="Quantity">{quantity}</p>
+                <button
+                  onClick={handelDecrement}
+                  className="w-full text-xl grid place-items-center cursor-pointer h-full duration-300 hover:bg-primary hover:text-white transition ease-in-out"
+                >
+                  <FaMinus />
+                </button>
+              </div>
+            )}
+            <button
+              onClick={() => cartStore.addToCart(CartProduct)}
+              className="w-full md:w-64 h-9 rounded bg-primary text-white"
+            >
+              اضافة الى السلة
+            </button>
+            {authStore.isAuthenticated && coin_store !== "true" ? (
+              <button
+                onClick={addToFavourite}
+                className="absolute top-0 left-0 w-11 h-11 bg-primary text-white rounded grid place-items-center shadow-xl"
+              >
+                {data.favorites ? <FaHeart /> : <FaRegHeart />}
+              </button>
+            ) : null}
+          </div>
+        </section>
+        <section
+          id="productImage "
+          className="grid place-items-center w-full row-start-1 md:col-start-2"
+        >
+          <img
+            src={`${IMAGE_BASE_URL}${product.image}`}
+            alt={product.name}
+            className="w-full md:w-[398px] rounded"
+          />
+        </section>
       </div>
-    </>
+    </div>
   );
 }
 

@@ -8,7 +8,7 @@ function ContactUs() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
-  document.title = "Talgtna | تواصل معنا";
+  document.title = "Talagtna | تواصل معنا";
 
   const mutation = useMutation(
     async (data: unknown) => {

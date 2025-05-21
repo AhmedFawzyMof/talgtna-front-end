@@ -1,12 +1,25 @@
 import { useEffect, useState } from "react";
+import { BASE_URL, IMAGE_BASE_URL } from "../config/config";
+import { useMutation } from "react-query";
+import { toast } from "sonner";
+import { useAuthStore } from "../store/AuthStore";
 
 const METHODS = {
   cash_on_delivery: "نقدى",
   digital_wallet: "محفظة رقمية",
 } as const;
 
-function OrderCard({ order, cities }: { order: Order; cities: any }) {
+function OrderCard({
+  order,
+  cities,
+  refetch,
+}: {
+  order: Order;
+  cities: any;
+  refetch: () => void;
+}) {
   const discount = JSON.parse(order.discount);
+  const authStore = useAuthStore((state) => state);
   const [total, setTotal] = useState(0);
   const [delivered, setDelivered] = useState(order.delivered);
 
@@ -24,8 +37,60 @@ function OrderCard({ order, cities }: { order: Order; cities: any }) {
     setDelivered(city.value);
   }, [order]);
 
+  const handleCancel = useMutation({
+    mutationFn: (id: string) => {
+      return fetch(`${BASE_URL}/order/cancel/${id}`, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+        },
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => {
+      toast.success("تم اضافة بنجاح");
+      refetch();
+    },
+    onError: () => {
+      toast.error("فشل في اضافة");
+    },
+  });
+
   return (
     <div className=" w-11/12 md:w-4/5 flow-root shadow-lg bg-white rounded-lg border border-gray-100 py-3 mx-5 sm:mx-14">
+      {order.processing === 1 && order.delivered === 0 ? (
+        <>
+          <img
+            src={`${IMAGE_BASE_URL}/img/processing.webp`}
+            alt="الطلب قيد التجهيز"
+            className="h-40 w-40 mx-auto"
+          />
+          <p className="text-center text-primary font-bold">
+            الطلب قيد التجهيز
+          </p>
+        </>
+      ) : (
+        order.delivered === 0 && (
+          <button
+            onClick={() => handleCancel.mutate(order.id)}
+            className="bg-primary-400 px-3 py-2 text-white rounded shadow mr-2 mb-2"
+          >
+            إلغاء الطلب
+          </button>
+        )
+      )}
+      {order.delivered === 1 && (
+        <>
+          <img
+            src={`${IMAGE_BASE_URL}/img/delivered.webp`}
+            alt="نشكركم على حسن ثقتكم بنا"
+            className="h-40 w-40 mx-auto"
+          />
+          <p className="text-center text-primary font-bold">
+            نشكركم على حسن ثقتكم بنا
+          </p>
+        </>
+      )}
+
       <dl className="-my-3 divide-gray-100 text-sm">
         <div className="grid grid-cols-1 gap-1 p-3 even:bg-gray-50 sm:grid-cols-3 sm:gap-4">
           <dt className="font-bold  text-primary">رقم الطلب</dt>

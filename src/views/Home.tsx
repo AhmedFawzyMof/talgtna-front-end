@@ -17,7 +17,7 @@ function Home() {
 
   if (isLoading) return <p>Loading...</p>;
 
-  document.title = "Talgtna | الرئيسية";
+  document.title = "Talagtna | الرئيسية";
 
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
 

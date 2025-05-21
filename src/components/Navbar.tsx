@@ -23,7 +23,6 @@ export default function Navbar() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
-  const [showIosInstallGuide, setShowIosInstallGuide] = useState(false);
   const isIos = /iphone|ipad|ipod/.test(
     window.navigator.userAgent.toLowerCase()
   );
@@ -32,7 +31,6 @@ export default function Navbar() {
 
   useEffect(() => {
     const handler = (e: Event) => {
-      console.log("beforeinstallprompt event fired");
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setIsInstallable(true);
@@ -43,14 +41,14 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (isIos && !isInStandaloneMode) {
+    if (!isIos && !isInStandaloneMode) {
       setIsInstallable(true);
     }
   }, []);
 
   const handleLogout = () => {
     authStore.logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const handelSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -61,19 +59,8 @@ export default function Navbar() {
   };
 
   const handleInstallClick = async () => {
-    if (isIos && !isInStandaloneMode) {
-      setShowIosInstallGuide(true);
-      return;
-    }
-
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
-      console.log("User accepted the PWA installation");
-    } else {
-      console.log("User dismissed the PWA installation");
-    }
     setDeferredPrompt(null);
     setIsInstallable(false);
   };
@@ -84,9 +71,9 @@ export default function Navbar() {
         <Link to="/" className="block text-teal-600">
           <span className="sr-only">الرئيسية</span>
           <img
-            src={IMAGE_BASE_URL + "/img/logo.png"}
-            alt="Talgtna"
-            className="h-10 w-auto"
+            src={IMAGE_BASE_URL + "/img/logo.webp"}
+            alt="Talagtna"
+            className="h-28 w-auto"
           />
         </Link>
 
@@ -174,15 +161,15 @@ export default function Navbar() {
                 الصفحة الرئيسية
               </Link>
             </li>
-            {isInstallable && !showIosInstallGuide && (
+            {isInstallable && (
               <li>
-                <button
-                  onClick={handleInstallClick}
+                <Link
+                  to="/download"
                   className="flex items-center gap-2 w-full text-start rounded-lg bg-primary-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-primary-400 hover:text-white duration-300 ease-in-out"
                 >
                   <p>تحميل التطبيق</p>
                   <FaDownload />
-                </button>
+                </Link>
               </li>
             )}
             <li>
@@ -230,52 +217,14 @@ export default function Navbar() {
                 </li>
               </>
             )}
-            {showIosInstallGuide && !isInstallable && (
-              <li className="bg-white border border-primary-200 rounded-lg p-3 text-sm text-gray-700 space-y-3">
-                <p className="font-semibold text-primary-600 text-center">
-                  تثبيت التطبيق (Safari فقط)
-                </p>
-
-                <p>
-                  لتثبيت التطبيق على جهازك iPhone أو iPad، تأكد أنك تستخدم{" "}
-                  <strong>متصفح Safari</strong> واتبع الخطوات التالية:
-                </p>
-
-                <ul className="list-disc list-inside text-right text-gray-600 space-y-1">
-                  <li>
-                    اضغط على زر <strong>المشاركة</strong> في أسفل المتصفح.
-                  </li>
-                  <li>
-                    اختر <strong>إضافة إلى الشاشة الرئيسية</strong>.
-                  </li>
-                </ul>
-
-                <p className="font-semibold text-primary-600 text-center">
-                  ملاحظات هامة:
-                </p>
-                <ul className="list-disc list-inside text-right text-gray-600 space-y-1 text-xs">
-                  <li>
-                    تأكد أن مساحة التخزين في جهازك كافية، لأن امتلاء الذاكرة قد
-                    يمنع ظهور خيار الإضافة.
-                  </li>
-                  <li>
-                    وجود عدد كبير جداً من التطبيقات المثبتة قد يؤثر على إمكانية
-                    إضافة التطبيق.
-                  </li>
-                  <li>
-                    تحقق من إعدادات الجهاز، ولا توجد قيود تمنع تثبيت التطبيقات
-                    من المتصفح.
-                  </li>
-                </ul>
-
-                <button
-                  onClick={() => setShowIosInstallGuide(false)}
-                  className="bg-primary text-white py-1 px-3 rounded shadow text-xs block mx-auto mt-2"
-                >
-                  فهمت
-                </button>
-              </li>
-            )}
+            <li>
+              <Link
+                to="/terms"
+                className="block rounded-lg bg-primary-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-primary-400 hover:text-white duration-300 ease-in-out"
+              >
+                الشروط والاحكام
+              </Link>
+            </li>
           </ul>
         </div>
       </div>

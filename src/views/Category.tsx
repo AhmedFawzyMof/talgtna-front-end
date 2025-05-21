@@ -16,7 +16,7 @@ function Category() {
     }).then((res) => res.json())
   );
 
-  document.title = `Talgtna | ${name}`;
+  document.title = `Talagtna | ${name}`;
 
   if (isLoading) return <p>Loading...</p>;
 

@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 
 function OrderSuccess() {
   const { order } = useParams<{ order: string }>();
-  document.title = `Talgtna | رقم الطلب ${order}`;
+  document.title = `Talagtna | رقم الطلب ${order}`;
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-[90vh] grid place-items-center">

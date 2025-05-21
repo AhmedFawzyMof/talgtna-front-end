@@ -24,6 +24,8 @@ import { Toaster } from "sonner";
 import Search from "./views/Search";
 import CartToast from "./components/CartToast";
 import CoinStore from "./views/CoinStore";
+import Download from "./views/Download";
+import TermsAndConditions from "./views/Terms";
 
 const queryClient = new QueryClient();
 
@@ -37,7 +39,8 @@ function Layout() {
   return (
     <>
       <Navbar />
-      <div className=" max-w-screen-2xl mx-auto xl:px-8">
+      {/* <WorkingHour /> */}
+      <div className="max-w-screen-2xl mx-auto xl:px-8">
         {totalQuantity > 0 ? <CartToast /> : null}
         <Outlet />
       </div>
@@ -109,6 +112,14 @@ const router = createBrowserRouter([
       {
         path: "search",
         element: <Search />,
+      },
+      {
+        path: "/download",
+        element: <Download />,
+      },
+      {
+        path: "/terms",
+        element: <TermsAndConditions />,
       },
     ],
   },

@@ -16,6 +16,7 @@ export default function OrderForm({
   const authStore = useAuthStore((state) => state);
   const cartStore = useCartStore((state) => state);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -54,6 +55,7 @@ export default function OrderForm({
 
   const mutation = useMutation(
     async (data: unknown) => {
+      setLoading(true);
       const header: { [key: string]: string } = {
         "Content-Type": "application/json",
       };
@@ -80,10 +82,12 @@ export default function OrderForm({
         cartStore.setDiscount("", 0);
         authStore.login(data.token, data.favorites);
         navigate("/ordersuccess/" + data.order);
+        setLoading(false);
         toast.success("تم إرسال الطلب بنجاح");
       },
       onError: () => {
         toast.error("فشل في الطلب");
+        setLoading(false);
       },
     }
   );
@@ -316,9 +320,10 @@ export default function OrderForm({
         <div className="mt-4">
           <button
             type="submit"
+            disabled={loading}
             className="inline-block w-full rounded-lg bg-primary px-5 py-3 font-medium text-white sm:w-auto"
           >
-            اطلب الان
+            {loading ? "جاري انشاء الطلب" : "اطلب الان"}
           </button>
         </div>
       </form>

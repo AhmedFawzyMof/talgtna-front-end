@@ -18,7 +18,7 @@ export default function Order() {
     fetch(`${BASE_URL}/city`).then((res) => res.json())
   );
 
-  document.title = "Talgtna | الطلب";
+  document.title = "Talagtna | الطلب";
 
   useEffect(() => {
     if (cartStore.cart.length === 0) {

@@ -1,5 +1,5 @@
 function About() {
-  document.title = "Talgtna | عنا";
+  document.title = "Talagtna | عنا";
   return (
     <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <div className="space-y-4">

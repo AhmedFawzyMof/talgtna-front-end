@@ -29,7 +29,7 @@ function Company() {
         },
       }).then((res) => res.json())
   );
-  document.title = `Talgtna | ${name}`;
+  document.title = `Talagtna | ${name}`;
 
   if (isLoading) return <p>Loading...</p>;
 
@@ -56,7 +56,7 @@ function Company() {
         <img
           src={`${IMAGE_BASE_URL}${company.image}`}
           alt={company.name}
-          className="rounded w-1/2 md:w-[225px] shadow"
+          className="rounded w-1/2 md:w-[225px]"
         />
 
         <h1 className="text-2xl font-bold mt-3 text-primary text-center">
