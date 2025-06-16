@@ -33,7 +33,7 @@ function Home() {
                   <Link
                     to={`/company/${company.name}`}
                     key={company.id}
-                    className="bg-primary text-nowrap shadow-md text-white px-2 py-2 rounded-md"
+                    className="bg-gradient-to-r from-orange-100 to-red-100 hover:from-orange-400 hover:to-red-400 text-nowrap shadow-md text-primary hover:text-white duration-300 px-2 py-2 rounded-md"
                   >
                     {company.name}
                   </Link>

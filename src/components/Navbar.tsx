@@ -83,7 +83,7 @@ export default function Navbar() {
         >
           <button
             onClick={() => setIsActive(!isActive)}
-            className="bg-primary text-white py-2 px-2 rounded shadow"
+            className="bg-gradient-to-bl from-orange-400 to-red-400 text-white py-2 px-2 rounded shadow"
           >
             <span className="sr-only">القائمة</span>
             <MdMenuOpen
@@ -92,7 +92,7 @@ export default function Navbar() {
           </button>
           <Link
             to="/cart"
-            className="relative bg-primary text-white py-2 px-2 rounded shadow"
+            className="relative bg-gradient-to-bl from-orange-400 to-red-400 text-white py-2 px-2 rounded shadow"
           >
             <span className="sr-only">سلة التسوق</span>
             {cartStore.getTotalQuantity() > 0 && (
@@ -105,7 +105,7 @@ export default function Navbar() {
           {authStore.isAuthenticated && (
             <Link
               to="/favorites"
-              className="relative bg-primary text-white py-2 px-2 rounded shadow"
+              className="relative bg-gradient-to-bl from-orange-400 to-red-400 text-white py-2 px-2 rounded shadow"
             >
               <span className="sr-only">المفضلة</span>
               {authStore.favorites > 0 && (
@@ -119,7 +119,7 @@ export default function Navbar() {
           {isInstallable && (
             <button
               onClick={handleInstallClick}
-              className="relative bg-primary text-white py-2 px-2 rounded shadow"
+              className="bg-gradient-to-bl from-orange-400 to-red-400 text-white py-2 px-2 rounded shadow"
             >
               <FaDownload className="text-xl" />
             </button>
@@ -147,7 +147,7 @@ export default function Navbar() {
                 />
                 <button
                   type="submit"
-                  className="absolute top-0 right-0 bg-primary text-white w-10 h-full grid place-items-center rounded-r-md"
+                  className="absolute top-0 right-0 bg-gradient-to-tl from-orange-400 to-red-400 text-white w-10 h-full grid place-items-center rounded-r-md"
                 >
                   <BiSearch className="text-2xl" />
                 </button>

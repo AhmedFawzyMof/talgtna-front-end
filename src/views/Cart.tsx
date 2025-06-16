@@ -72,14 +72,6 @@ function Cart() {
                           </dd>
                         </dl>
                       )}
-                      <dl className="flex items-center justify-between gap-4">
-                        <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
-                          توصيل
-                        </dt>
-                        <dd className="text-base font-medium text-red-600">
-                          {cartStore.dilivery} ج
-                        </dd>
-                      </dl>
                     </div>
 
                     <dl className="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">

@@ -19,7 +19,7 @@ type CartStore = {
 export const useCartStore = create<CartStore>((set) => ({
   cart: [],
   discount: { code: "", value: 0 } as discount,
-  dilivery: 30,
+  dilivery: 0,
   coins: 0,
 
   setCoins: (coins: number) => {

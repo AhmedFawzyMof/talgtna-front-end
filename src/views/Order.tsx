@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { useCartStore } from "../store/CartStore";
 import { useNavigate } from "react-router-dom";
 import OrderForm from "../components/OrderForm";
-import { useQuery } from "react-query";
-import { BASE_URL } from "../config/config";
 
 export default function Order() {
   const cartStore = useCartStore((state) => state);
@@ -13,10 +11,6 @@ export default function Order() {
   const totalQuantity = cartStore.getTotalQuantity();
   const discountValue: number = cartStore.discount.value;
   const totalDiscount: number = total - discountValue;
-
-  const { data, error, isLoading } = useQuery(["city"], () =>
-    fetch(`${BASE_URL}/city`).then((res) => res.json())
-  );
 
   document.title = "Talagtna | الطلب";
 
@@ -34,14 +28,6 @@ export default function Order() {
       }, 0)
     );
   }, [cartStore.cart, totalQuantity]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>An error has occurred: {(error as Error).message}</div>;
-  }
 
   return (
     <>
@@ -78,7 +64,7 @@ export default function Order() {
         </div>
       </section>
       <section className="grid place-items-center py-7">
-        <OrderForm totalDiscount={totalDiscount} cities={data} />
+        <OrderForm />
       </section>
     </>
   );
