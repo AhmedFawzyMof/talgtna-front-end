@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { CartProduct } from "@/config/types";
+import { discount } from "@/config/types";
 
 type CartStore = {
   cart: CartProduct[];

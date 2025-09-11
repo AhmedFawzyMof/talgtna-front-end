@@ -1,45 +1,72 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { BASE_URL } from "../config/config";
 import { useAuthStore } from "../store/AuthStore";
+import { useEffect, useState } from "react";
+import { Loading } from "../components/Loading";
 
 function OrderSuccess() {
   const { order } = useParams<{ order: string }>();
   const url = new URL(window.location.href);
-  const id = url.searchParams.get("id");
-  const success = url.searchParams.get("success");
+  const id = url.searchParams.get("invoice_id");
   const authStore = useAuthStore((state) => state);
-  document.title = `Talagtna | رقم الطلب ${order}`;
   const navigate = useNavigate();
-  const { isLoading, error, data } = useQuery(
-    `order-success-${order}`,
-    () =>
+  const [success, setSuccess] = useState(false);
+
+  document.title = `Talagtna | رقم الطلب ${order}`;
+
+  const {
+    isLoading,
+    error,
+    data: initialResponse,
+  } = useQuery({
+    queryKey: [`order-success-${order}`],
+    queryFn: () =>
+      fetch(`${BASE_URL}/order/payment/response`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authStore.token}`,
+        },
+        body: JSON.stringify({ id }),
+        credentials: "include",
+      }).then((res) => res.json()),
+
+    refetchOnWindowFocus: false,
+    enabled: !!id,
+  });
+
+  const { data: createOrderResponse, error: createOrderError } = useQuery({
+    queryKey: ["create-order"],
+    queryFn: () =>
       fetch(`${BASE_URL}/order/success`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authStore.token}`,
         },
-        body: JSON.stringify({ id, success }),
+        body: JSON.stringify({ id }),
         credentials: "include",
       }).then((res) => res.json()),
-    {
-      refetchOnWindowFocus: false,
-      enabled: !!id && success === "true",
+
+    enabled: initialResponse?.success === "success",
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (createOrderError) {
+      toast.error((createOrderError as Error).message);
     }
-  );
 
-  if (isLoading) return <p>Loading...</p>;
+    if (createOrderResponse) {
+      console.log(createOrderResponse);
+      setSuccess(true);
+    }
+  }, [createOrderResponse, createOrderError, id, navigate]);
 
-  if (error) return <p>An error has occurred: {(error as Error).message}</p>;
-
-  if (data?.success) {
-    navigate(`/ordersuccess/${id}`, { replace: true });
-    toast.success(data?.message);
-  } else {
-    toast.error(data?.message);
-  }
+  if (isLoading) return <Loading />;
+  if (error) return <p>Error: {(error as Error).message}</p>;
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-[90vh] grid place-items-center">
@@ -49,19 +76,19 @@ function OrderSuccess() {
             className="hidden sm:grid sm:size-20 sm:shrink-0 sm:place-content-center sm:rounded-full sm:border-2 sm:border-primary"
             aria-hidden="true"
           >
-            {success === "false" ? (
-              <i className="text-red-500">!</i>
+            {success ? (
+              <i className="text-primary">✓</i>
             ) : (
-              <i className="text-primary">تم</i>
+              <i className="text-red-500">!</i>
             )}
           </div>
 
           <div>
             <h3 className="mt-4 text-lg font-medium sm:text-xl">
               <a className="hover:underline">
-                {success === "false"
-                  ? "حدث خطأ ما أثناء إنشاء الطلب"
-                  : `تم إنشاء الطلب بنجاح رقم الطلب هو ( ${id ? id : order} )`}
+                {success
+                  ? `تم إنشاء الطلب بنجاح رقم الطلب هو ( ${id || order} )`
+                  : "حدث خطأ ما أثناء إنشاء الطلب"}
               </a>
             </h3>
           </div>

@@ -1,41 +1,32 @@
 import { Alert } from "flowbite-react/components/Alert";
-import { Link } from "react-router-dom";
 
-// const getEgyptHour = () => {
-//   const now = new Date();
+const getEgyptHour = () => {
+  const now = new Date();
 
-//   const utcHour = now.getUTCHours();
+  const utcHour = now.getUTCHours();
 
-//   const egyptOffset = 3;
-//   const egyptHour = (utcHour + egyptOffset) % 24;
+  const egyptOffset = 2;
+  const egyptHour = (utcHour + egyptOffset) % 24;
 
-//   return egyptHour;
-// };
+  return egyptHour;
+};
 
 export default function WorkingHour() {
-  // const hour = getEgyptHour();
+  const hour = getEgyptHour();
 
-  // const isBefore10AM = hour < 10;
-  // const isAfter11PM = hour >= 23;
+  const isBefore10AM = hour < 10;
+  const isAfter11PM = hour >= 23;
 
   return (
     <>
-      <Alert
-        color="info"
-        className="flex justify-center items-center font-bold"
-      >
-        نود أن نخبرك أن هذا التطبيق في إصدار تجريبي، يرجى تزويدنا بأي مشكلات
-        واجهتها من خلال صفحة{" "}
-        <Link to="/contact" className="underline">
-          اتصل بنا
-        </Link>
-      </Alert>
-      <Alert
-        color="warning"
-        className="flex justify-center items-center font-bold"
-      >
-        مواعيد العمل من 12ص حتى 11م
-      </Alert>
+      {isBefore10AM || isAfter11PM ? (
+        <Alert
+          color="warning"
+          className="flex justify-center items-center font-bold"
+        >
+          مواعيد العمل من 12م حتى 11م
+        </Alert>
+      ) : null}
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "../store/AuthStore";
 import { BASE_URL } from "../config/config";
 import { toast } from "sonner";
@@ -8,8 +8,8 @@ export default function Discount() {
   const authStore = useAuthStore((state) => state);
   const cartStore = useCartStore((state) => state);
 
-  const DiscountMutation = useMutation(
-    async (code: string) => {
+  const DiscountMutation = useMutation({
+    mutationFn: async (code: string) => {
       const response = await fetch(`${BASE_URL}/discount`, {
         method: "POST",
         headers: {
@@ -20,19 +20,17 @@ export default function Discount() {
       });
       return response.json();
     },
-    {
-      onSuccess(data) {
-        if (!data.discount.success) {
-          toast.error(data.discount.message);
-          return;
-        }
+    onSuccess(data) {
+      if (!data.discount.success) {
+        toast.error(data.discount.message);
+        return;
+      }
 
-        toast.success("تم استخدام الكوبون بنجاح");
-        const coupon = data.discount.coupon;
-        cartStore.setDiscount(coupon.code, coupon.value);
-      },
-    }
-  );
+      toast.success("تم استخدام الكوبون بنجاح");
+      const coupon = data.discount.coupon;
+      cartStore.setDiscount(coupon.code, coupon.value);
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

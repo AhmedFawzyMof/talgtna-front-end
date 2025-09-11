@@ -1,23 +1,27 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { BASE_URL, IMAGE_BASE_URL } from "../config/config";
 import CarouselComponent from "../components/Carousel";
 import { useAuthStore } from "../store/AuthStore";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useCartStore } from "../store/CartStore";
+import { Loading } from "../components/Loading";
+import { Product, Offer, CartProduct } from "../config/types";
 
 export default function CoinStore() {
   const cartStore = useCartStore();
   const authStore = useAuthStore();
   const navigate = useNavigate();
 
-  const { isLoading, error, data } = useQuery("coinstore", () =>
-    fetch(`${BASE_URL}/products/coinstore`, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-      },
-    }).then((res) => res.json())
-  );
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["coinstore"],
+    queryFn: () =>
+      fetch(`${BASE_URL}/products/coinstore`, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+        },
+      }).then((res) => res.json()),
+  });
 
   useEffect(() => {
     if (!authStore.isAuthenticated) {
@@ -31,7 +35,7 @@ export default function CoinStore() {
   const products: Product[] = data?.products ?? [];
   const offers: Offer[] = data?.offers ?? [];
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <Loading />;
 
   document.title = "Talagtna | متجر النقاط";
 
@@ -57,7 +61,7 @@ export default function CoinStore() {
                 key={product.id}
                 className="block rounded-lg p-4 shadow-lg bg-white relative"
               >
-                {cartStore.coins <= 3000 && (
+                {cartStore.coins <= 3000 ? (
                   <div>
                     <p className="w-full text-center absolute z-30 text-primary font-bold top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2">
                       {cartStore.coins < 3000 &&
@@ -65,14 +69,15 @@ export default function CoinStore() {
                     </p>
                     <div className="absolute top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2 rounded bg-black w-full h-full opacity-50 grid place-items-center"></div>
                   </div>
-                )}
-                {cartStore.coins < product.price * 50 && (
-                  <div>
-                    <p className="w-full text-center absolute z-30 text-primary font-bold top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2">
-                      نقاطك ليست كافية
-                    </p>
-                    <div className="absolute top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2 rounded bg-black w-full h-full opacity-50 grid place-items-center"></div>
-                  </div>
+                ) : (
+                  cartStore.coins < product.price * 50 && (
+                    <div>
+                      <p className="w-full text-center absolute z-30 text-primary font-bold top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2">
+                        نقاطك ليست كافية
+                      </p>
+                      <div className="absolute top-1/2 left-1/2  transform -translate-x-1/2 -translate-y-1/2 rounded bg-black w-full h-full opacity-50 grid place-items-center"></div>
+                    </div>
+                  )
                 )}
                 {cartStore.coins > product.price * 50 &&
                   cartStore.coins >= 3000 && (

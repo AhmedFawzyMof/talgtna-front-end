@@ -1,4 +1,4 @@
-interface Product {
+export interface Product {
   id: number;
   name: string;
   price: number;
@@ -11,27 +11,28 @@ interface Product {
   isFavorite: boolean;
 }
 
-interface Offer {
+export interface Offer {
   id: number;
   product: number;
   image: string;
   company: string;
 }
 
-interface Company {
+export interface Company {
   id: number;
   name: string;
   image: string;
   soon: number;
 }
 
-interface Category {
+export interface Category {
   id: number;
   name: string;
   image: string;
+  number_of_products?: number;
 }
 
-interface CartProduct {
+export interface CartProduct {
   id: number;
   quantity: number;
   name: string;
@@ -40,12 +41,12 @@ interface CartProduct {
   with_coins: boolean;
 }
 
-interface discount {
+export interface discount {
   code: string;
   value: number;
 }
 
-interface OrderProduct {
+export interface OrderProduct {
   id: number;
   name: string;
   price: number;
@@ -54,7 +55,7 @@ interface OrderProduct {
   with_coins: boolean;
 }
 
-interface Order {
+export interface Order {
   id: string;
   created_at: string;
   method: string;

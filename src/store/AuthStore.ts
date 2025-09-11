@@ -58,10 +58,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     });
   },
   favoritesNumber: (favorites: number) => {
-    set((state) => {
-      state.favorites = favorites;
-      localStorage.setItem("favorites", `${favorites}`);
-      return state;
-    });
+    localStorage.setItem("favorites", `${favorites}`);
+    set(() => ({ favorites }));
   },
 }));

@@ -1,9 +1,10 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "../store/AuthStore";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import Coupon from "../components/Coupon";
 import { BASE_URL } from "../config/config";
+import { Loading } from "../components/Loading";
 
 function Coupons() {
   document.title = `Talagtna | كوبونات`;
@@ -17,15 +18,17 @@ function Coupons() {
     navigate("/");
   }
 
-  const { isLoading, error, data } = useQuery("coupons", () =>
-    fetch(`${BASE_URL}/user/coupons`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((res) => res.json())
-  );
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["coupons"],
+    queryFn: () =>
+      fetch(`${BASE_URL}/user/coupons`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((res) => res.json()),
+  });
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <Loading />;
 
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
 

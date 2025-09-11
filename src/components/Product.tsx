@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 import { useCartStore } from "../store/CartStore";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/AuthStore";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { BASE_URL, IMAGE_BASE_URL } from "../config/config";
 import { FaCartPlus, FaPlus, FaMinus, FaHeart } from "react-icons/fa6";
+import { Product } from "../config/types";
 
 function ProductCard({
   product,
@@ -16,7 +17,7 @@ function ProductCard({
   product: Product;
   isAuthenticated: boolean;
   inFavorites: boolean;
-  refetch?: () => void;
+  refetch: () => void;
 }) {
   const isAuth = isAuthenticated;
   const authStore = useAuthStore((state) => state);
@@ -28,8 +29,8 @@ function ProductCard({
   const [quantity, setQuantity] = useState(1);
   const totalQuantity = useCartStore((state) => state.getTotalQuantity());
 
-  const mutation = useMutation(
-    async (data: unknown) => {
+  const mutation = useMutation({
+    mutationFn: async (data: unknown) => {
       const response = await fetch(`${BASE_URL}/user/fav`, {
         method: "POST",
         headers: {
@@ -51,14 +52,46 @@ function ProductCard({
         toast.error("المنتج موجود بالفعل في المفضلة");
       }
     },
-    {
-      onError: () => {
-        toast.error("فشلت في الإضافة إلى المفضلة");
-      },
-    }
-  );
+
+    onError: () => {
+      toast.error("فشلت في الإضافة إلى المفضلة");
+    },
+  });
+
+  const removefromFav = useMutation({
+    mutationFn: async (data: unknown) => {
+      const response = await fetch(`${BASE_URL}/user/fav`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authStore.token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        toast.error("فشلت في الحذف من المفضلة");
+      }
+      const responseData = await response.json();
+      if (responseData.success) {
+        toast.success("تمت الحذف من المفضلة بنجاح");
+        if (typeof refetch === "function") refetch();
+        authStore.favoritesNumber(responseData.favoritesNumber ?? 0);
+      } else {
+        toast.error("فشلت في الحذف من المفضلة");
+      }
+    },
+
+    onError: () => {
+      toast.error("فشلت في الحذف من المفضلة");
+    },
+  });
 
   const addToFavourite = () => {
+    if (inFavorites) {
+      removefromFav.mutate({ product_id: product.id });
+      return;
+    }
     if (isAuth) {
       mutation.mutate({ product_id: CartProduct.id });
     } else {
@@ -174,7 +207,7 @@ function ProductCard({
             <FaMinus />
           </button>
         </div>
-        {isAuth && !inFavorites && (
+        {isAuth && (
           <button
             onClick={addToFavourite}
             id="addToFav"
@@ -182,7 +215,9 @@ function ProductCard({
           >
             <FaHeart
               className={`${
-                product.isFavorite ? "text-primary" : "text-black"
+                product.isFavorite || inFavorites
+                  ? "text-primary"
+                  : "text-black"
               }`}
             />
           </button>

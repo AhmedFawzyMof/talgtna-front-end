@@ -3,8 +3,8 @@ import react from "@vitejs/plugin-react-swc";
 import legacy from "@vitejs/plugin-legacy";
 import { VitePWA } from "vite-plugin-pwa";
 const CURRENT_VERSION = "1.5";
+import path from "path";
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
@@ -75,4 +75,9 @@ export default defineConfig({
       filename: `sw-v${CURRENT_VERSION}.js`,
     }),
   ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
 });

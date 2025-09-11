@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useCartStore } from "../store/CartStore";
 import { IMAGE_BASE_URL } from "../config/config";
 import { FaRegTrashAlt, FaPlus, FaMinus } from "react-icons/fa";
+import { CartProduct } from "@/config/types";
 
 function CartItem({ product }: { product: CartProduct }) {
   const removeFromCart = useCartStore((state) => state.removeFromCart);
@@ -30,7 +31,7 @@ function CartItem({ product }: { product: CartProduct }) {
                 onClick={() => decrementQuantity(product.id)}
                 id="decrement-button-4"
                 data-input-counter-decrement="counter-input-4"
-                className="inline-flex  h-8 w-8 shrink-0 items-center justify-center rounded-md border border-primary-300 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
+                className="inline-flex  h-8 w-8 shrink-0 items-center justify-center rounded-md border border-primary/70 bg-white hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
               >
                 <FaMinus />
               </button>
@@ -45,7 +46,7 @@ function CartItem({ product }: { product: CartProduct }) {
                 onClick={() => incrementQuantity(product.id)}
                 id="increment-button-4"
                 data-input-counter-increment="counter-input-4"
-                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border  border-primary-300 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
+                className="inline-flex  h-8 w-8 shrink-0 items-center justify-center rounded-md border border-primary/70 bg-white hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
               >
                 <FaPlus />
               </button>

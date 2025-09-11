@@ -1,27 +1,32 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../store/AuthStore";
 import { BASE_URL } from "../config/config";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCartStore } from "../store/CartStore";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { Loading } from "./Loading";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const METHODS = [
-  {
-    value: "cash_on_delivery",
-    label: "نقدى",
-  },
-  {
-    value: "payment",
-    label: "(قريبا) عبر بطاقة الائتمان",
-  },
+  { value: "cash_on_delivery", label: "نقدى" },
+  { value: "payment", label: "عبر بطاقة الائتمان" },
 ] as const;
 
 interface City {
   city: string;
   value: number;
 }
-
 interface UserData {
   name: string;
   phone: string;
@@ -32,52 +37,41 @@ interface UserData {
   city: string;
 }
 
-const useCities = (token: string) => {
-  return useQuery<City[]>("cities", async () => {
-    const response = await fetch(`${BASE_URL}/city`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch cities: ${response.statusText}`);
-    }
-
-    return response.json();
-  });
-};
-
-const useUserData = (token: string) => {
-  return useQuery<UserData>(
-    "user_data",
-    async () => {
-      const response = await fetch(`${BASE_URL}/user/get`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+const useCities = (token: string) =>
+  useQuery<City[]>({
+    queryKey: ["cities"],
+    queryFn: async () => {
+      const response = await fetch(`${BASE_URL}/city`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
+      if (!response.ok) throw new Error("فشل تحميل المدن");
+      return response.json();
+    },
+  });
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch user data: ${response.statusText}`);
-      }
-
+const useUserData = (token: string) =>
+  useQuery<UserData>({
+    queryKey: ["user_data"],
+    queryFn: async () => {
+      const response = await fetch(`${BASE_URL}/user/get`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error("فشل تحميل بيانات المستخدم");
       const userdata = await response.json();
       return userdata.user;
     },
-    {
-      enabled: !!token,
-    }
-  );
-};
+    enabled: !!token,
+  });
 
 function OrderForm() {
-  const authStore = useAuthStore((state) => state);
-  const cartStore = useCartStore((state) => state);
-  const [loading, setLoading] = useState(false);
+  const authStore = useAuthStore((s) => s);
+  const cartStore = useCartStore((s) => s);
+  const navigate = useNavigate();
+
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [hasCoins, setHasCoins] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<UserData>({
     name: "",
     phone: "",
     spare_phone: "",
@@ -86,54 +80,33 @@ function OrderForm() {
     floor: "",
     city: "",
   });
-  const [orderForm, setOrderForm] = useState({
-    method: "cash_on_delivery",
-  });
+  const [orderForm, setOrderForm] = useState({ method: "cash_on_delivery" });
 
-  const navigate = useNavigate();
-
-  const { data } = useCities(authStore.token);
-  const { data: userData, isLoading: userDataLoading } = useUserData(
+  const { data: cities } = useCities(authStore.token);
+  const { data: userData, isLoading: userLoading } = useUserData(
     authStore.token
   );
 
   useEffect(() => {
-    if (authStore.isAuthenticated && userData && !userDataLoading) {
-      setFormData({
-        name: userData.name || "",
-        phone: userData.phone || "",
-        spare_phone: userData.spare_phone || "",
-        street: userData.street || "",
-        building: userData.building || "",
-        floor: userData.floor || "",
-        city: userData.city || "",
-      });
+    if (authStore.isAuthenticated && userData && !userLoading) {
+      setFormData({ ...userData });
     }
-  }, [authStore.isAuthenticated, userData, userDataLoading]);
+  }, [authStore.isAuthenticated, userData, userLoading]);
 
   useEffect(() => {
-    cartStore.cart.forEach((product) => {
-      if (product.with_coins) {
-        setHasCoins(true);
-      }
-    });
+    setHasCoins(cartStore.cart.some((p) => p.with_coins));
     cartStore.setDilivery(
-      Number(data?.find((city) => city.city === formData.city)?.value)
+      Number(cities?.find((c) => c.city === formData.city)?.value) || 0
     );
-  }, [data, formData.city]);
+  }, [cities, formData.city, cartStore.cart]);
 
-  const handleCityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setFormData({ ...formData, city: event.target.value });
-    cartStore.setDilivery(
-      Number(data?.find((city) => city.city === event.target.value)?.value)
-    );
-  };
+  const handleChange = (key: keyof UserData, value: string) =>
+    setFormData({ ...formData, [key]: value });
 
-  const login = useMutation(
-    ["login"],
-    async () => {
+  const saveUser = useMutation({
+    mutationFn: async () => {
       setLoading(true);
-      const response = await fetch(`${BASE_URL}/user/create`, {
+      const res = await fetch(`${BASE_URL}/user/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -141,316 +114,210 @@ function OrderForm() {
         },
         body: JSON.stringify(formData),
       });
-
-      if (!response.ok) {
-        throw new Error(`Failed to create user: ${response.statusText}`);
-      }
+      if (!res.ok) throw new Error("فشل حفظ البيانات");
       setLoading(false);
-      return response.json();
+      return res.json();
     },
-    {
-      onSuccess: (data) => {
-        setStep(2);
-        authStore.login(data.token, data.favorites);
-      },
-    }
-  );
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    login.mutate();
-  };
+    onSuccess: (data) => {
+      authStore.login(data.token, data.favorites);
+      setStep(2);
+    },
+    onError: () => {
+      toast.error("حدث خطأ أثناء حفظ البيانات");
+    },
+  });
 
-  const order = useMutation(
-    ["order"],
-    async () => {
+  const order = useMutation({
+    mutationFn: async () => {
       setLoading(true);
-      const orderData = {
-        cart: cartStore.cart,
-        method: orderForm.method,
-        discount: cartStore.discount,
-        dilivery: cartStore.dilivery,
-      };
-      const response = await fetch(`${BASE_URL}/order`, {
+      const res = await fetch(`${BASE_URL}/order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authStore.token}`,
         },
-        body: JSON.stringify(orderData),
+        body: JSON.stringify({
+          cart: cartStore.cart,
+          method: orderForm.method,
+          discount: cartStore.discount,
+          dilivery: cartStore.dilivery,
+        }),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to create order");
-      }
-
-      return response.json();
+      if (!res.ok) throw new Error("فشل إنشاء الطلب");
+      return res.json();
     },
-    {
-      onSuccess: (data) => {
-        cartStore.clearCart();
-        cartStore.setDiscount("", 0);
-        navigate("/ordersuccess/" + data.order);
-        setLoading(false);
-        toast.success("تم إرسال الطلب بنجاح");
-      },
-      onError: () => {
-        setLoading(false);
-        toast.error("فشل في الطلب");
-      },
-    }
-  );
 
-  const CreatePayment = useMutation(
-    ["payment"],
-    async () => {
+    onSuccess: (data) => {
+      cartStore.clearCart();
+      cartStore.setDiscount("", 0);
+      navigate(`/ordersuccess/${data.order}`);
+      toast.success("تم إرسال الطلب بنجاح");
+      setLoading(false);
+    },
+    onError: () => {
+      toast.error("فشل في إنشاء الطلب");
+      setLoading(false);
+    },
+  });
+
+  const createPayment = useMutation({
+    mutationFn: async () => {
       setLoading(true);
-
-      const orderData = {
-        cart: cartStore.cart,
-        discount: cartStore.discount,
-        dilivery: cartStore.dilivery,
-      };
-
-      const response = await fetch(`${BASE_URL}/order/create/paymentlink`, {
+      const res = await fetch(`${BASE_URL}/order/create/paymentlink`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authStore.token}`,
         },
-        body: JSON.stringify(orderData),
+        body: JSON.stringify({
+          ...formData,
+          cart: cartStore.cart,
+          discount: cartStore.discount,
+          dilivery: cartStore.dilivery,
+        }),
         credentials: "include",
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error response:", errorData);
-        throw new Error(errorData.error || "Failed to create order");
-      }
-
-      return response.json();
+      if (!res.ok) throw new Error("فشل إنشاء رابط الدفع");
+      return res.json();
     },
-    {
-      onSuccess(data) {
-        console.log("Order created:", data);
-        window.location.href = data.link;
-        setLoading(false);
-      },
-      onError(error) {
-        console.error("Mutation error:", (error as Error).message);
-        setLoading(false);
-      },
-    }
-  );
+
+    onSuccess: (data) => {
+      window.location.href = data.link;
+    },
+    onError: () => {
+      toast.error("فشل في إنشاء رابط الدفع");
+      setLoading(false);
+    },
+  });
+
+  if (loading) return <Loading />;
 
   return (
-    <div className="rounded-lg bg-white w-[95%] md:w-4/5 p-8 shadow-lg lg:col-span-3 lg:p-12">
-      {step === 1 && (
-        <form id="orderForm" className="space-y-4" onSubmit={handleSubmit}>
-          <div>
-            <label className="sr-only" htmlFor="name">
-              الاسم
-            </label>
-            <input
-              className="w-full rounded-lg p-3 text-sm border border-primary"
-              placeholder="الاسم"
-              type="text"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              id="name"
-              required
-              name="name"
-            />
-          </div>
+    <Card className="w-[95%] md:w-4/5 bg-white shadow-lg rounded-lg">
+      <CardHeader>
+        <CardTitle className="text-xl text-primary font-bold text-center">
+          {step === 1 ? "بيانات التوصيل" : "اختيار طريقة الدفع"}
+        </CardTitle>
+      </CardHeader>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label className="sr-only" htmlFor="phone">
-                رقم الهاتف
-              </label>
-              <input
-                className="w-full rounded-lg border border-primary p-3 text-sm text-end"
-                placeholder="رقم الهاتف"
-                type="tel"
-                id="phone"
-                required
-                name="phone"
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <label className="sr-only" htmlFor="spare_phone">
-                رقم هاتف احتياطي
-              </label>
-              <input
-                className="w-full rounded-lg border border-primary p-3 text-sm text-end"
-                placeholder="رقم هاتف احتياطي"
-                type="tel"
-                id="spare_phone"
-                name="spare_phone"
-                value={formData.spare_phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, spare_phone: e.target.value })
-                }
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label className="sr-only" htmlFor="street">
-                شارع
-              </label>
-              <input
-                className="w-full rounded-lg border border-primary p-3 text-sm text-start"
-                placeholder="شارع"
-                type="text"
-                id="street"
-                required
-                name="street"
-                value={formData.street}
-                onChange={(e) =>
-                  setFormData({ ...formData, street: e.target.value })
-                }
-              />
-            </div>
-
-            <div>
-              <label className="sr-only" htmlFor="building">
-                عماره
-              </label>
-              <input
-                className="w-full rounded-lg border border-primary p-3 text-sm text-start"
-                placeholder="عماره"
-                type="text"
-                id="building"
-                required
-                name="building"
-                value={formData.building}
-                onChange={(e) =>
-                  setFormData({ ...formData, building: e.target.value })
-                }
-              />
-            </div>
-          </div>
-          <div>
-            <label className="sr-only" htmlFor="floor">
-              طابق
-            </label>
-            <input
-              className="w-full rounded-lg p-3 text-sm border border-primary"
-              placeholder="طابق"
-              type="text"
-              id="floor"
-              required
-              name="floor"
-              value={formData.floor}
-              onChange={(e) =>
-                setFormData({ ...formData, floor: e.target.value })
-              }
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="cities"
-              className="block text-sm font-medium text-gray-900"
-            >
-              المدن
-            </label>
-
-            <select
-              required
-              id="cities"
-              name="city"
-              className="mt-1.5 w-full rounded-lg border-primary text-gray-700 sm:text-sm"
-              value={formData.city}
-              onChange={handleCityChange}
-            >
-              <option value="" disabled>
-                أختر المدينه
-              </option>
-              {data?.map((city) => (
-                <option key={city.city} value={city.city}>
-                  {city.city}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button
-            className={`cursor-pointer bg-primary text-white py-2 px-4 rounded ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={loading}
-            type="submit"
+      <CardContent>
+        {step === 1 ? (
+          <form
+            className="space-y-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              saveUser.mutate();
+            }}
           >
-            {loading ? "جارى التحميل..." : "التالي"}
-          </button>
-        </form>
-      )}
+            <Input
+              placeholder="الاسم"
+              value={formData.name}
+              onChange={(e) => handleChange("name", e.target.value)}
+              required
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input
+                placeholder="رقم الهاتف"
+                value={formData.phone}
+                onChange={(e) => handleChange("phone", e.target.value)}
+                required
+              />
+              <Input
+                placeholder="رقم هاتف احتياطي"
+                value={formData.spare_phone}
+                onChange={(e) => handleChange("spare_phone", e.target.value)}
+              />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input
+                placeholder="شارع"
+                value={formData.street}
+                onChange={(e) => handleChange("street", e.target.value)}
+                required
+              />
+              <Input
+                placeholder="عمارة"
+                value={formData.building}
+                onChange={(e) => handleChange("building", e.target.value)}
+                required
+              />
+            </div>
+            <Input
+              placeholder="طابق"
+              value={formData.floor}
+              onChange={(e) => handleChange("floor", e.target.value)}
+              required
+            />
 
-      {step === 2 && (
-        <form>
-          <fieldset className="space-y-3">
-            <legend className="sr-only">طريقة الدفع</legend>
-            {METHODS.map((method) => (
-              <div key={method.value}>
+            <Label>المدن</Label>
+            <Select
+              value={formData.city}
+              onValueChange={(val) => handleChange("city", val)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="اختر المدينة" />
+              </SelectTrigger>
+              <SelectContent>
+                {cities?.map((c) => (
+                  <SelectItem key={c.city} value={c.city}>
+                    {c.city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Button type="submit" className="w-full mt-4">
+              التالي
+            </Button>
+          </form>
+        ) : (
+          <div className="space-y-6">
+            <fieldset className="space-y-3">
+              {METHODS.map((m) => (
                 <label
-                  htmlFor={method.value}
-                  className={`flex items-center justify-between gap-4 rounded border  p-3 text-sm font-medium shadow-sm transition-colors hover:bg-gray-50 has-checked:border-primary has-checked:ring-1 has-checked:ring-primary 
-                   ${
-                     method.value === "payment"
-                       ? "bg-gray-300"
-                       : "border-gray-300 bg-white hover:bg-gray-50"
-                   }`}
+                  key={m.value}
+                  className={`flex items-center justify-between border rounded p-3 cursor-pointer ${
+                    orderForm.method === m.value
+                      ? "border-primary bg-gray-50"
+                      : "border-gray-300"
+                  } ${
+                    m.value === "payment" && hasCoins
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
                 >
-                  <div>
-                    <p className="text-gray-700">{method.label}</p>
-                  </div>
+                  <span>{m.label}</span>
                   <input
                     type="radio"
-                    name="payment-method"
-                    value={method.value}
-                    required
-                    checked={orderForm.method === method.value}
-                    disabled={loading || method.value === "payment"}
-                    onChange={() =>
-                      setOrderForm({ ...orderForm, method: method.value })
-                    }
-                    id={method.value}
-                    className={`size-5 border-gray-300 ${
-                      method.value === "payment" && hasCoins
-                        ? "bg-gray-300"
-                        : ""
-                    }`}
+                    name="method"
+                    value={m.value}
+                    checked={orderForm.method === m.value}
+                    disabled={m.value === "payment" && hasCoins}
+                    onChange={() => setOrderForm({ method: m.value })}
                   />
                 </label>
-              </div>
-            ))}
-          </fieldset>
-          {orderForm.method !== "payment" ? (
-            <button
+              ))}
+            </fieldset>
+            <Button
+              onClick={() =>
+                orderForm.method === "payment"
+                  ? createPayment.mutate()
+                  : order.mutate()
+              }
+              className="w-full"
               disabled={loading}
-              onClick={() => order.mutate()}
-              className="bg-primary text-white py-2 px-4 rounded mt-10"
             >
-              {loading ? "جارى التحميل..." : "تأكيد الطلب"}
-            </button>
-          ) : (
-            <button
-              disabled={loading}
-              onClick={() => CreatePayment.mutate()}
-              className="bg-primary text-white py-2 px-4 rounded mt-10"
-            >
-              {loading ? "جارى التحميل..." : "استمر"}
-            </button>
-          )}
-        </form>
-      )}
-    </div>
+              {loading
+                ? "جاري التحميل..."
+                : orderForm.method === "payment"
+                ? "استمر"
+                : "تأكيد الطلب"}
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

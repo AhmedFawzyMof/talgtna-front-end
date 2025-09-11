@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { IMAGE_BASE_URL } from "../config/config";
+import { Company } from "@/config/types";
 
 function CompanyDiv(company: Company) {
   if (company.soon === 1)

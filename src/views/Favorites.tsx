@@ -1,36 +1,50 @@
-import { useQuery } from "react-query";
+import { useEffect } from "react";
+import { Loading } from "../components/Loading";
 import ProductCard from "../components/Product";
+import { toast } from "sonner";
 import { useAuthStore } from "../store/AuthStore";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import { BASE_URL } from "../config/config";
+import { Product } from "@/config/types";
 
-function Favorites() {
+export default function Favorites() {
   const authStore = useAuthStore((state) => state);
   const navigate = useNavigate();
 
-  if (!authStore.isAuthenticated) {
-    toast.error("يجب عليك تسجيل الدخول");
-    navigate("/");
-  }
+  useEffect(() => {
+    if (!authStore.isAuthenticated) {
+      toast.error("يجب عليك تسجيل الدخول");
+      navigate("/");
+    }
+  }, [authStore.isAuthenticated]);
 
-  const { isLoading, error, data } = useQuery("favorites", () =>
-    fetch(`${BASE_URL}/user/favorites`, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-      },
-    }).then((res) => res.json())
-  );
+  const { isLoading, error, data, refetch } = useQuery({
+    queryKey: ["favorites"],
+    queryFn: () =>
+      fetch(`${BASE_URL}/user/favorites`, {
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+        },
+      }).then((res) => res.json()),
+  });
 
   document.title = "Talagtna | المفضلات";
 
+  useEffect(() => {
+    if (data) {
+      authStore.favoritesNumber(data.favorites);
+    }
+  }, [data]);
+
   const products: Product[] = data?.products ?? [];
 
-  if (isLoading) return <p>Loading...</p>;
+  if (!authStore.isAuthenticated) return null;
+
+  if (isLoading) return <Loading />;
 
   if (error) return <p>An error has occurred: {(error as Error).message}</p>;
 
-  authStore.favoritesNumber(data.favorites);
   return (
     <>
       {products.length === 0 && (
@@ -45,11 +59,10 @@ function Favorites() {
             product={product}
             inFavorites={true}
             isAuthenticated={authStore.isAuthenticated}
+            refetch={refetch}
           />
         ))}
       </div>
     </>
   );
 }
-
-export default Favorites;

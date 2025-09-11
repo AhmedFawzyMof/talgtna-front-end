@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { BASE_URL } from "../config/config";
 
@@ -10,8 +10,8 @@ function ContactUs() {
   const [message, setMessage] = useState("");
   document.title = "Talagtna | تواصل معنا";
 
-  const mutation = useMutation(
-    async (data: unknown) => {
+  const mutation = useMutation({
+    mutationFn: async (data: unknown) => {
       const response = await fetch(`${BASE_URL}/contact`, {
         method: "POST",
         headers: {
@@ -31,15 +31,14 @@ function ContactUs() {
 
       return response.json();
     },
-    {
-      onSuccess: () => {
-        toast.success("تم إرسال الرسالة بنجاح");
-      },
-      onError: () => {
-        toast.error("فشل في إرسال الرسالة");
-      },
-    }
-  );
+
+    onSuccess: () => {
+      toast.success("تم إرسال الرسالة بنجاح");
+    },
+    onError: () => {
+      toast.error("فشل في إرسال الرسالة");
+    },
+  });
 
   const sendDataToServer = () => {
     mutation.mutate({ name, email, phone, message });
