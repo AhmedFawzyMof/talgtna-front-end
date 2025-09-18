@@ -13,6 +13,7 @@ import {
   LayoutList,
   Shield,
   Bike,
+  CreditCard,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -92,6 +93,12 @@ const items = [
     title: "التوصيل والمدن",
     href: "/admin/dashboard/delivery",
     icon: Bike,
+    badge: false,
+  },
+  {
+    title: "الكوبونات",
+    href: "/admin/dashboard/coupons",
+    icon: CreditCard,
     badge: false,
   },
 ];

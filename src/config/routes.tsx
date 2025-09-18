@@ -10,14 +10,13 @@ import OrderHistory from "@/views/OrderHistory";
 import OrderSuccess from "@/views/OrderSuccess";
 import ProductView from "@/views/Product";
 import Company from "@/views/Company";
-import Coupons from "@/views/Coupons";
 import Navbar from "@/components/Navbar";
 import { useAuthStore } from "@/store/AuthStore";
 import { useCartStore } from "@/store/CartStore";
 import Search from "@/views/Search";
 import CartToast from "@/components/CartToast";
 import CoinStore from "@/views/CoinStore";
-import Download from "@/views/Download";
+
 import TermsAndConditions from "@/views/Terms";
 import WorkingHour from "@/components/WorkingHour";
 import { Outlet } from "react-router-dom";
@@ -35,6 +34,9 @@ import Offers from "@/views/admin/offers";
 import Receipt from "@/views/admin/receipt";
 import Admins from "@/views/admin/admins";
 import Delivery from "@/views/admin/delivery";
+import Privacy from "@/views/Privacy";
+import AdminCoupons from "@/views/admin/coupons";
+import Footer from "@/components/Footer";
 
 function Layout() {
   const authStore = useAuthStore((state) => state);
@@ -51,6 +53,7 @@ function Layout() {
         {totalQuantity > 0 ? <CartToast /> : null}
         <Outlet />
       </div>
+      <Footer />
     </>
   );
 }
@@ -122,6 +125,10 @@ export const routes = [
         element: <Delivery />,
       },
       {
+        path: "coupons",
+        element: <AdminCoupons />,
+      },
+      {
         path: "*",
         element: <div>404</div>,
       },
@@ -180,10 +187,6 @@ export const routes = [
         element: <Favorites />,
       },
       {
-        path: "coupons",
-        element: <Coupons />,
-      },
-      {
         path: "cart",
         element: <Cart />,
       },
@@ -196,12 +199,12 @@ export const routes = [
         element: <Search />,
       },
       {
-        path: "/download",
-        element: <Download />,
+        path: "terms",
+        element: <TermsAndConditions />,
       },
       {
-        path: "/terms",
-        element: <TermsAndConditions />,
+        path: "privacy",
+        element: <Privacy />,
       },
     ],
   },

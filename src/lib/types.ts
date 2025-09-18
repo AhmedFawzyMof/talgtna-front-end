@@ -11,11 +11,6 @@ export interface Product {
   offer: number;
 }
 
-interface discount {
-  code: string;
-  value: number;
-}
-
 export interface Customer {
   id: string;
   name: string;
@@ -39,7 +34,7 @@ export interface Order {
   user: string;
   delivered: boolean;
   processing: boolean;
-  discount: discount;
+  discount: string;
   city: string;
   phone: string;
   spare_phone: string;
@@ -73,6 +68,11 @@ export interface Contact {
   message: string;
   created_at: string;
   seen: boolean;
+}
+
+export interface Coupon {
+  code: string;
+  value: number;
 }
 
 export interface Offer {

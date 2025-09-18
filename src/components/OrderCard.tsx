@@ -56,8 +56,9 @@ function OrderCard({
     const city = cities.find((c: any) => c.city === order.city);
     const delivery = city?.value || 0;
 
+    const discountAmount = sum * discount.value;
     sum += delivery;
-    sum -= discount.value;
+    sum -= discountAmount;
 
     setTotal(sum);
     setDeliveryCost(delivery);
@@ -65,9 +66,12 @@ function OrderCard({
 
   const handleCancel = useCancelOrder(token, refetch).mutate;
 
+  const calcTotal = (price: number, quantity: number) => {
+    return price * quantity;
+  };
+
   return (
     <div className="w-11/12 md:w-4/5 mx-auto mb-6 rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-      {/* ✅ Order status */}
       <div className="flex flex-col items-center justify-center p-4">
         {order.processing === 1 && order.delivered === 0 && (
           <>
@@ -102,8 +106,10 @@ function OrderCard({
           </>
         )}
       </div>
+      <p className="mt-2 text-center text-gray-600 text-sm sm:text-base">
+        التوصيل من 45 دقيقة إلى 90 دقيقة
+      </p>
 
-      {/* ✅ Order details */}
       <dl className="divide-y divide-gray-100 text-sm">
         <InfoRow label="رقم الطلب">{order.id.substring(0, 8)}</InfoRow>
         <InfoRow label="تاريخ الطلب" valueClass="text-end" dir="ltr">
@@ -139,7 +145,9 @@ function OrderCard({
                     <td className="hidden sm:block">{p.name}</td>
                     <td>{p.price}</td>
                     <td>{p.quantity}</td>
-                    <td>{!p.with_coins ? p.price * p.quantity : 0}</td>
+                    <td>
+                      {!p.with_coins ? calcTotal(p.price, p.quantity) : 0}
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -116,8 +116,16 @@ export function ShowOrder({ orderShow }: any) {
                     JSON.stringify(detail.value)
                   ) : detail.label === "طريقة الدفع" ? (
                     METHODS[detail.value as keyof typeof METHODS]
+                  ) : detail.value ? (
+                    detail.label === "الاجمالي" ? (
+                      order?.total -
+                      order?.total *
+                        (order?.discount ? JSON.parse(order.discount).value : 0)
+                    ) : (
+                      detail.value
+                    )
                   ) : (
-                    detail.value
+                    <span className="text-muted-foreground">لا يوجد</span>
                   )}
                 </dd>
               </div>

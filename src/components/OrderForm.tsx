@@ -57,8 +57,19 @@ const useUserData = (token: string) =>
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error("فشل تحميل بيانات المستخدم");
+
       const userdata = await response.json();
-      return userdata.user;
+      return (
+        userdata.user ?? {
+          name: "",
+          phone: "",
+          spare_phone: "",
+          street: "",
+          building: "",
+          floor: "",
+          city: "",
+        }
+      );
     },
     enabled: !!token,
   });
@@ -193,6 +204,17 @@ function OrderForm() {
 
   if (loading) return <Loading />;
 
+  const isFormValid = () => {
+    return (
+      formData.name.trim() !== "" &&
+      formData.phone.trim() !== "" &&
+      formData.street.trim() !== "" &&
+      formData.building.trim() !== "" &&
+      formData.floor.trim() !== "" &&
+      formData.city.trim() !== ""
+    );
+  };
+
   return (
     <Card className="w-[95%] md:w-4/5 bg-white shadow-lg rounded-lg">
       <CardHeader>
@@ -267,7 +289,11 @@ function OrderForm() {
               </SelectContent>
             </Select>
 
-            <Button type="submit" className="w-full mt-4">
+            <Button
+              type="submit"
+              className="w-full mt-4"
+              disabled={!isFormValid()}
+            >
               التالي
             </Button>
           </form>

@@ -50,6 +50,7 @@ export function EditOrder({ orderEdit, refetch }: any) {
             setOrders({
               delivered: orderEdit?.delivered,
               id: orderEdit?.id,
+              user: orderEdit?.user_id,
               processing: orderEdit?.processing,
             })
           }

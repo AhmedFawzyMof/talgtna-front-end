@@ -133,7 +133,7 @@ export default function Orders() {
                     {order.paymob_paid ? "نعم" : "لا"}
                   </TableCell>
                   <TableCell className="w-auto">
-                    {order.discount.value}
+                    {order.total * JSON.parse(order.discount).value}
                   </TableCell>
                   <TableCell className="w-auto">{order.city}</TableCell>
                   <TableCell className="w-auto">{order.phone}</TableCell>
@@ -144,7 +144,10 @@ export default function Orders() {
                   <TableCell className="w-auto">
                     {METHODS[order.method as keyof typeof METHODS]}
                   </TableCell>
-                  <TableCell className="w-auto">{order.total}</TableCell>
+                  <TableCell className="w-auto">
+                    {order.total -
+                      order.total * JSON.parse(order.discount).value}
+                  </TableCell>
                   <TableCell className="w-auto">
                     {new Date(order.created_at).toLocaleDateString("ar-EG", {
                       day: "numeric",

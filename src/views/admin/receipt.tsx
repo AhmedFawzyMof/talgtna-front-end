@@ -111,14 +111,20 @@ export default function Receipt() {
             <div className="divider"></div>
             <div className="total">
               {JSON.parse(data?.data.receipt.discount).code !== "" && (
-                <p>خصم: {JSON.parse(data?.data.receipt.discount).value}-</p>
+                <p>
+                  خصم:{" "}
+                  {data?.data.receipt.total *
+                    JSON.parse(data?.data.receipt.discount).value}
+                  -
+                </p>
               )}
               <p>تكلفة التوصيل: {delivery}</p>
               <p>
                 المجموع:{" "}
                 {data?.data.receipt.total +
                   delivery -
-                  JSON.parse(data?.data.receipt.discount).value}
+                  data?.data.receipt.total *
+                    JSON.parse(data?.data.receipt.discount).value}
               </p>
             </div>
           </div>

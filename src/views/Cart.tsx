@@ -11,7 +11,7 @@ function Cart() {
   const [subtotal, setSubtotal] = useState(0);
   const cart = cartStore.cart;
   const totalQuantity = cartStore.getTotalQuantity();
-  const discount = cartStore.discount;
+  const [discount, setDiscount] = useState(cartStore.discount.value);
 
   document.title = "Talagtna | السلة";
 
@@ -26,7 +26,18 @@ function Cart() {
     );
   }, [cart, totalQuantity]);
 
-  const total = subtotal - discount.value;
+  useEffect(() => {
+    if (subtotal > 100) {
+      const value: number = cartStore.discount.value;
+      const percentage: number = subtotal * value;
+      setDiscount(percentage);
+    } else {
+      setDiscount(0);
+      cartStore.setDiscount("", 0);
+    }
+  }, [subtotal, cartStore.discount.value]);
+
+  const total = subtotal - discount;
   return (
     <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
       {cart.length > 0 && (
@@ -62,13 +73,13 @@ function Cart() {
                         </dd>
                       </dl>
 
-                      {discount.value !== 0 && (
+                      {discount !== 0 && (
                         <dl className="flex items-center justify-between gap-4">
                           <dt className="text-base font-normal text-gray-500 dark:text-gray-400">
                             التوفير
                           </dt>
                           <dd className="text-base font-medium text-green-600">
-                            {discount.value} ج
+                            {discount} ج
                           </dd>
                         </dl>
                       )}

@@ -3,6 +3,7 @@ import { useAuthStore } from "../store/AuthStore";
 import { BASE_URL } from "../config/config";
 import { toast } from "sonner";
 import { useCartStore } from "../store/CartStore";
+import { Button } from "./ui/button";
 
 export default function Discount() {
   const authStore = useAuthStore((state) => state);
@@ -58,9 +59,9 @@ export default function Discount() {
             placeholder="كود الخصم ..."
           />
 
-          <button className="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+          <Button className="flex w-full items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
             <span>استخدام الكوبون</span>
-          </button>
+          </Button>
         </form>
       </div>
     </div>

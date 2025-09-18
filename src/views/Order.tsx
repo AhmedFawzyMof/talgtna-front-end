@@ -9,13 +9,13 @@ export default function Order() {
   const [subtotal, setSubtotal] = useState(0);
   const navigate = useNavigate();
 
-  // Handle delivery NaN (default to 0)
   const delivery = isNaN(cartStore.dilivery) ? 0 : cartStore.dilivery;
-  const discountValue: number = cartStore.discount.value || 0;
 
-  // Compute totals safely
+  const value: number = cartStore.discount.value;
+  const percentage: number = subtotal * value;
+
   const total = subtotal + delivery;
-  const totalDiscount = total - discountValue;
+  const totalDiscount = total - percentage;
 
   document.title = "Talagtna | الطلب";
 
@@ -55,10 +55,10 @@ export default function Order() {
                 <dd>{delivery} ج.م</dd>
               </div>
 
-              {discountValue > 0 && (
+              {percentage > 0 && (
                 <div className="flex justify-between border-b pb-2 text-green-600">
                   <dt>خصم</dt>
-                  <dd id="discountValue">- {discountValue} ج.م</dd>
+                  <dd id="discountValue">- {percentage} ج.م</dd>
                 </div>
               )}
 
@@ -67,7 +67,7 @@ export default function Order() {
                 <dd id="total">
                   {isNaN(totalDiscount)
                     ? subtotal
-                    : discountValue
+                    : percentage
                     ? totalDiscount
                     : total}{" "}
                   ج.م

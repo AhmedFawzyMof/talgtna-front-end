@@ -17,6 +17,7 @@ export const getOrders = async (
 };
 
 export const editOrder = async (token: string, order: any) => {
+  console.log(order);
   const response = await api.put(`/admin/orders/${order.id}`, order, {
     headers: {
       Authorization: `Bearer ${token}`,
