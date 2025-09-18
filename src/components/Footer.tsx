@@ -7,8 +7,7 @@ export default function Footer() {
       <Card className="rounded-none shadow-none border-t bg-gray-50">
         <CardContent className="container mx-auto py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-600">
           <p className="text-center md:text-right">
-            © {new Date().getFullYear()} جميع الحقوق محفوظة | تطبيق الأطعمة
-            المجمدة
+            © {new Date().getFullYear()} جميع الحقوق محفوظة | Talagtna
           </p>
 
           <div className="flex items-center gap-6">
