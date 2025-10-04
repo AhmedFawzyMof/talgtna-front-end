@@ -55,8 +55,14 @@ export const useCartStore = create<CartStore>((set) => ({
       if (item) {
         const updatedCart = state.cart.map((i: CartProduct) => {
           if (i.id === id) {
-            if (i.quantity < 20) {
-              return { ...i, quantity: i.quantity + 1 };
+            if (i.category !== "مستلزمات السوبر ماركت") {
+              if (i.quantity < 20) {
+                return { ...i, quantity: i.quantity + 1 };
+              }
+            } else {
+              if (i.quantity < 2) {
+                return { ...i, quantity: i.quantity + 1 };
+              }
             }
           }
           return i;

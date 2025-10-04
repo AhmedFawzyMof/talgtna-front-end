@@ -1,17 +1,15 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import legacy from "@vitejs/plugin-legacy";
 import { VitePWA } from "vite-plugin-pwa";
-const CURRENT_VERSION = "1.5";
 import path from "path";
+import tailwindcss from "@tailwindcss/vite";
+
+const CURRENT_VERSION = "1.5";
 
 export default defineConfig({
   plugins: [
     react(),
-    legacy({
-      targets: ["defaults", "not IE 11"],
-      additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
-    }),
+    tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "robots.txt", "apple-touch-icon.png"],
@@ -42,37 +40,19 @@ export default defineConfig({
         ],
       },
       workbox: {
+        runtimeCaching: [],
+
         cleanupOutdatedCaches: true,
         skipWaiting: true,
-        cacheId: `Talagtna-${CURRENT_VERSION}`,
         clientsClaim: true,
-        navigationPreload: true,
-        runtimeCaching: [
-          {
-            urlPattern: ({ request }) => request.mode === "navigate",
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "pages-cache-" + CURRENT_VERSION,
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 3 * 24 * 60 * 60,
-              },
-            },
-          },
-          {
-            urlPattern: /\.(?:js|css|png|jpg|jpeg|svg|gif|ico)$/,
-            handler: "StaleWhileRevalidate",
-            options: {
-              cacheName: "assets-cache-" + Date.now(),
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 3 * 24 * 60 * 60,
-              },
-            },
-          },
-        ],
+
+        navigationPreload: false,
       },
-      filename: `sw-v${CURRENT_VERSION}.js`,
+      filename: `sw-nocache-v${CURRENT_VERSION}.js`,
+      injectRegister: "auto",
+      devOptions: {
+        enabled: true,
+      },
     }),
   ],
   resolve: {

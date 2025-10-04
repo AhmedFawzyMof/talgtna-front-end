@@ -18,6 +18,12 @@ import {
   LogOut,
 } from "lucide-react";
 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => void;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
@@ -32,13 +38,16 @@ const NavbarSidebar = () => {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
+
+  const [showInstallPopup, setShowInstallPopup] = useState(true);
+
   const navigate = useNavigate();
 
   const isIos = /iphone|ipad|ipod/.test(
     window.navigator.userAgent.toLowerCase()
   );
   const isInStandaloneMode =
-    "standalone" in window.navigator && (window.navigator as any).standalone;
+    "standalone" in window.navigator && window.navigator.standalone;
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -57,26 +66,34 @@ const NavbarSidebar = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (isInstallable) {
+      const seen = localStorage.getItem("installPopupSeen");
+      if (!seen) {
+        setTimeout(() => {
+          setShowInstallPopup(true);
+          localStorage.setItem("installPopupSeen", "1");
+        }, 1000);
+      }
+    }
+  }, [isInstallable]);
+
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
+    // const choice = await deferredPrompt.userChoice;
     setDeferredPrompt(null);
     setIsInstallable(false);
-  };
-
-  const handelSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!query) return;
-    navigate(`/search?query=${query}`);
-    setQuery("");
+    setShowInstallPopup(false);
   };
 
   const handleLogout = () => {
     authStore.logout();
     navigate("/");
   };
-
+  const handleClosePopup = () => {
+    setShowInstallPopup(false);
+  };
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
 
@@ -183,7 +200,12 @@ const NavbarSidebar = () => {
           </div>
 
           <form
-            onSubmit={handelSubmit}
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!query) return;
+              navigate(`/search?query=${query}`);
+              setQuery("");
+            }}
             className="flex-1 max-w-md mx-4 relative"
           >
             <Search
@@ -229,12 +251,36 @@ const NavbarSidebar = () => {
             </Link>
 
             {isInstallable && (
-              <button
-                onClick={handleInstallClick}
-                className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-primary text-white hover:bg-primary/70 transition-colors"
+              <Popover
+                open={showInstallPopup}
+                onOpenChange={setShowInstallPopup}
               >
-                <Download size={20} />
-              </button>
+                <PopoverTrigger asChild>
+                  <button
+                    onClick={handleInstallClick}
+                    className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-primary text-white hover:bg-primary/70 transition-colors"
+                  >
+                    <Download size={20} />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  side="bottom"
+                  align="center"
+                  className="w-40 p-3"
+                >
+                  <div className="flex items-start space-x-2">
+                    <div className="flex-1">
+                      <p className="text-xs">دوس هنا ونزل البرنامج</p>
+                    </div>
+                    <button
+                      onClick={handleClosePopup}
+                      className="text-gray-500 hover:text-gray-700 p-1"
+                    >
+                      <X size={10} />
+                    </button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             )}
 
             <button

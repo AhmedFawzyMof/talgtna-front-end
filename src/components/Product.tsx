@@ -113,6 +113,7 @@ function ProductCard({
     name: product.name,
     image: product.image,
     price: product.price,
+    category: product.category,
     with_coins: false,
   };
 

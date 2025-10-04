@@ -1,9 +1,7 @@
-/* 1. Tailwind base styles */
-@tailwind base;
+@import "tailwindcss";
+@tailwind "tailwindcss-animate";
+@config "../tailwind.config.js";
 
-/* 2. Flowbite and plugin base layers (handled via Tailwind config/plugins) */
-
-/* 3. Custom CSS variables: light & dark themes */
 @layer base {
   :root {
     /* Light Theme Variables */
@@ -65,7 +63,6 @@
   }
 }
 
-/* 4. Global resets & border coloring */
 @layer base {
   * {
     @apply border-border;
@@ -74,7 +71,3 @@
     @apply bg-background text-foreground font-sans;
   }
 }
-
-/* 5. Tailwind components & utilities */
-@tailwind components;
-@tailwind utilities;

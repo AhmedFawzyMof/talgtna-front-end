@@ -30,6 +30,7 @@ export interface Category {
   name: string;
   image: string;
   number_of_products?: number;
+  new?: number;
 }
 
 export interface CartProduct {
@@ -38,6 +39,7 @@ export interface CartProduct {
   name: string;
   image: string;
   price: number;
+  category: string;
   with_coins: boolean;
 }
 

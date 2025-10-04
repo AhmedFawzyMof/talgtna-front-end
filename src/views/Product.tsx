@@ -23,6 +23,7 @@ function ProductView() {
   const { search } = useLocation();
   const params = new URLSearchParams(search);
   const coin_store = params.get("coin_store");
+  const getTotalQuantity = cartStore.getTotalQuantity();
 
   useEffect(() => {
     const ID = parseInt(id as string);
@@ -30,7 +31,7 @@ function ProductView() {
     if (item) {
       setQuantity(item.quantity);
     }
-  }, [cartStore.cart, id, cartStore.getTotalQuantity()]);
+  }, [cartStore.cart, id, getTotalQuantity]);
 
   const handelIncrement = () => {
     const ID = parseInt(id as string);
@@ -130,6 +131,7 @@ function ProductView() {
     name: product.name,
     image: product.image,
     price: product.price,
+    category: product.category,
     with_coins: coin_store === "true",
   };
 

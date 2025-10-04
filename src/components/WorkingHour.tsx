@@ -1,4 +1,4 @@
-import { Alert } from "flowbite-react/components/Alert";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 
 const getEgyptHour = () => {
   const now = new Date();
@@ -21,10 +21,10 @@ export default function WorkingHour() {
     <>
       {isBefore10AM || isAfter11PM ? (
         <Alert
-          color="warning"
+          variant={"destructive"}
           className="flex justify-center items-center font-bold"
         >
-          مواعيد العمل من 12م حتى 11م
+          <AlertTitle> مواعيد العمل من 12م حتى 11م</AlertTitle>
         </Alert>
       ) : null}
     </>

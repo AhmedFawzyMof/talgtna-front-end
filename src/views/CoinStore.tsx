@@ -89,6 +89,7 @@ export default function CoinStore() {
                           name: product.name,
                           image: product.image,
                           price: product.price * 50,
+                          category: product.category,
                           with_coins: true,
                         })
                       }

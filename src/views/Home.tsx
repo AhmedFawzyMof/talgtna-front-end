@@ -77,6 +77,12 @@ function Home() {
               key={category.id}
               className="overflow-hidden shadow-md hover:shadow-lg pt-0 pb-1 transition relative"
             >
+              {category.new === 1 && (
+                <img
+                  src="./new.png"
+                  className="absolute top-0 left-0 z-50 w-16 drop-shadow-lg"
+                />
+              )}
               <Link to={`/category/${category.name}`}>
                 <div className="relative">
                   <img
@@ -87,7 +93,7 @@ function Home() {
 
                   <Badge
                     variant="secondary"
-                    className="absolute top-2 left-2 bg-primary text-white shadow-md"
+                    className="absolute top-2 right-2 bg-primary text-white shadow-md"
                   >
                     {(category.number_of_products ?? 0) > 100
                       ? "100+"
