@@ -50,6 +50,17 @@ const NavbarSidebar = () => {
     "standalone" in window.navigator && window.navigator.standalone;
 
   useEffect(() => {
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone;
+
+    if (isStandalone) {
+      setIsInstallable(false);
+      setShowInstallPopup(false);
+    }
+  }, []);
+
+  useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);

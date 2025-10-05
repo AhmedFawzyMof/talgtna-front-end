@@ -4,7 +4,7 @@ import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 
-const CURRENT_VERSION = "1.5";
+const CURRENT_VERSION = "2.0.0";
 
 export default defineConfig({
   plugins: [
@@ -48,7 +48,7 @@ export default defineConfig({
 
         navigationPreload: false,
       },
-      filename: `sw-nocache-v${CURRENT_VERSION}.js`,
+      filename: `sw-v${CURRENT_VERSION}.js`,
       injectRegister: "auto",
       devOptions: {
         enabled: true,
