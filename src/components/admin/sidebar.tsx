@@ -54,6 +54,12 @@ const items = [
     badge: true,
   },
   {
+    title: "إنشاء طلب",
+    href: "/admin/dashboard/orders/create",
+    icon: Menu,
+    badge: false,
+  },
+  {
     title: "العملاء",
     href: "/admin/dashboard/customers",
     icon: Users,

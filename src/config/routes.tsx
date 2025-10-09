@@ -37,6 +37,7 @@ import Delivery from "@/views/admin/delivery";
 import Privacy from "@/views/Privacy";
 import AdminCoupons from "@/views/admin/coupons";
 import Footer from "@/components/Footer";
+import CreateOrder from "@/views/admin/createorder";
 
 function Layout() {
   const authStore = useAuthStore((state) => state);
@@ -91,6 +92,10 @@ export const routes = [
       {
         path: "orders",
         element: <Orders />,
+      },
+      {
+        path: "orders/create",
+        element: <CreateOrder />,
       },
       {
         path: "customers",

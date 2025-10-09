@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import type { UserData, City } from "@/config/types";
 import {
   Select,
   SelectContent,
@@ -22,20 +23,6 @@ const METHODS = [
   { value: "cash_on_delivery", label: "نقدى" },
   { value: "payment", label: "عبر بطاقة الائتمان" },
 ] as const;
-
-interface City {
-  city: string;
-  value: number;
-}
-interface UserData {
-  name: string;
-  phone: string;
-  spare_phone: string;
-  street: string;
-  building: string;
-  floor: string;
-  city: string;
-}
 
 const useCities = (token: string) =>
   useQuery<City[]>({

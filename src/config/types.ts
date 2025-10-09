@@ -68,3 +68,18 @@ export interface Order {
   total: number;
   products: OrderProduct[];
 }
+
+export interface UserData {
+  name: string;
+  phone: string;
+  spare_phone: string;
+  street: string;
+  building: string;
+  floor: string;
+  city: string;
+}
+
+export interface City {
+  city: string;
+  value: number;
+}
