@@ -20,13 +20,16 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { addProduct } from "@/actions/products";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "sonner";
+import { getSubCategories } from "@/actions/sub_categories";
+import { useState } from "react";
 
 export function AddProduct({ categories, companies, refetch }: any) {
   const authStore = useAuthStore((state) => state);
+  const [category, setCategory] = useState("");
 
   const addProductMutation = useMutation({
     mutationFn: (formData: FormData) => addProduct(authStore.token, formData),
@@ -45,6 +48,11 @@ export function AddProduct({ categories, companies, refetch }: any) {
 
     addProductMutation.mutate(formData);
   };
+
+  const { data } = useQuery({
+    queryKey: ["subCategories", category],
+    queryFn: () => getSubCategories(authStore.token, category),
+  });
 
   return (
     <Dialog>
@@ -73,7 +81,11 @@ export function AddProduct({ categories, companies, refetch }: any) {
               الفئة
             </Label>
             <div className="col-span-3">
-              <Select name="category">
+              <Select
+                onValueChange={(e) => setCategory(e)}
+                defaultValue={category}
+                name="category"
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="اختر الفئة" />
                 </SelectTrigger>
@@ -81,6 +93,28 @@ export function AddProduct({ categories, companies, refetch }: any) {
                   <SelectGroup>
                     <SelectLabel>الفئات</SelectLabel>
                     {categories?.map((category: any) => (
+                      <SelectItem key={category.name} value={category.name}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="sub_category" className="text-right">
+              الفئة الفرعية
+            </Label>
+            <div className="col-span-3">
+              <Select name="sub_category">
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="اختر الفئة الفرعية" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>الفئات</SelectLabel>
+                    {data?.data.subCategories.map((category: any) => (
                       <SelectItem key={category.name} value={category.name}>
                         {category.name}
                       </SelectItem>

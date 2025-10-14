@@ -19,11 +19,13 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { editProduct } from "@/actions/products";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "sonner";
+import { getSubCategories } from "@/actions/sub_categories";
+import { Loader } from "lucide-react";
 
 export function EditProduct({
   productEdit,
@@ -33,9 +35,35 @@ export function EditProduct({
 }: any) {
   const [product, setProduct] = useState<any>({});
   const authStore = useAuthStore((state) => state);
+  const [subCategories, setSubCategories] = useState<any>([]);
 
-  const editMutation = useMutation({
-    mutationFn: (data: any) => editProduct(authStore.token, data, product.id),
+  const { data } = useQuery({
+    queryKey: ["subCategories", product.category],
+    queryFn: () => getSubCategories(authStore.token, product.category),
+  });
+
+  useEffect(() => {
+    if (data?.data.subCategories) {
+      setSubCategories(data.data.subCategories);
+    }
+  }, [data?.data.subCategories]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | any) => {
+    if (e.target.name === "category") {
+      setProduct({
+        ...product,
+        [e.target.name]: e.target.value,
+        sub_category: "",
+      });
+      return;
+    }
+    setProduct({ ...product, [e.target.name]: e.target.value });
+  };
+
+  const { mutate: editMutation, isPending } = useMutation({
+    mutationFn: (data: any) => {
+      return editProduct(authStore.token, data, product.id);
+    },
     onSuccess: () => {
       toast.success("تم تعديل المنتج بنجاح");
       refetch();
@@ -49,7 +77,12 @@ export function EditProduct({
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     formData.append("id", product.id);
-    editMutation.mutate(formData);
+    Object.entries(product).forEach(([key, value]) => {
+      if (!formData.has(key) && key !== "image") {
+        formData.append(key, String(value));
+      }
+    });
+    editMutation(formData);
   };
 
   return (
@@ -63,7 +96,10 @@ export function EditProduct({
         <DialogHeader>
           <DialogTitle>تعديل المنتج</DialogTitle>
         </DialogHeader>
-        <form className="grid gap-4 py-4" onSubmit={handelEditProduct}>
+        <form
+          className="grid gap-4 py-4 overflow-y-scroll max-h-80"
+          onSubmit={handelEditProduct}
+        >
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
               الاسم
@@ -71,7 +107,7 @@ export function EditProduct({
             <Input
               id="name"
               value={product.name}
-              onChange={(e) => setProduct({ ...product, name: e.target.value })}
+              onChange={handleChange}
               name="name"
               className="col-span-3"
             />
@@ -83,9 +119,7 @@ export function EditProduct({
             <Input
               id="description"
               value={product.description}
-              onChange={(e) =>
-                setProduct({ ...product, description: e.target.value })
-              }
+              onChange={handleChange}
               name="description"
               className="col-span-3"
             />
@@ -99,7 +133,7 @@ export function EditProduct({
                 name="category"
                 value={product.category}
                 onValueChange={(value) =>
-                  setProduct({ ...product, category: value })
+                  handleChange({ target: { name: "category", value } })
                 }
               >
                 <SelectTrigger className="w-full">
@@ -119,6 +153,34 @@ export function EditProduct({
             </div>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="sub_category" className="text-right">
+              الفئة الفرعية
+            </Label>
+            <div className="col-span-3">
+              <Select
+                name="sub_category"
+                value={product.sub_category}
+                onValueChange={(value) =>
+                  handleChange({ target: { name: "sub_category", value } })
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="اختر الفئة الفرعية" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>الفئات</SelectLabel>
+                    {subCategories?.map((category: any) => (
+                      <SelectItem key={category.name} value={category.name}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="company" className="text-right">
               الشركة
             </Label>
@@ -127,7 +189,7 @@ export function EditProduct({
                 name="company"
                 value={product.company}
                 onValueChange={(value) =>
-                  setProduct({ ...product, company: value })
+                  handleChange({ target: { name: "company", value } })
                 }
               >
                 <SelectTrigger className="w-full">
@@ -155,7 +217,7 @@ export function EditProduct({
                 name="in_coin_store"
                 value={String(product.in_coin_store)}
                 onValueChange={(value) =>
-                  setProduct({ ...product, in_coin_store: Number(value) })
+                  handleChange({ target: { name: "in_coin_store", value } })
                 }
               >
                 <SelectTrigger className="w-full">
@@ -179,9 +241,7 @@ export function EditProduct({
               id="price"
               type="number"
               value={product.price}
-              onChange={(e) =>
-                setProduct({ ...product, price: e.target.value })
-              }
+              onChange={handleChange}
               name="price"
               className="col-span-3"
             />
@@ -195,9 +255,7 @@ export function EditProduct({
               type="number"
               name="offer"
               value={product.offer}
-              onChange={(e) =>
-                setProduct({ ...product, offer: e.target.value })
-              }
+              onChange={handleChange}
               className="col-span-3"
             />
           </div>
@@ -222,9 +280,7 @@ export function EditProduct({
               id="buyPrice"
               type="number"
               value={product.buy_price}
-              onChange={(e) =>
-                setProduct({ ...product, buy_price: e.target.value })
-              }
+              onChange={handleChange}
               name="buy_price"
               className="col-span-3"
             />
@@ -238,7 +294,9 @@ export function EditProduct({
                 name="available"
                 value={String(product.available)}
                 onValueChange={(value) =>
-                  setProduct({ ...product, available: Number(value) })
+                  handleChange({
+                    target: { name: "available", value: Number(value) },
+                  })
                 }
               >
                 <SelectTrigger className="w-full">
@@ -254,8 +312,16 @@ export function EditProduct({
               </Select>
             </div>
           </div>
-          <Button className="w-full cursor-pointer" type="submit">
-            حفظ التغييرات
+          <Button
+            disabled={isPending}
+            className="w-full cursor-pointer"
+            type="submit"
+          >
+            {isPending ? (
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              "حفظ التغييرات"
+            )}
           </Button>
         </form>
       </DialogContent>

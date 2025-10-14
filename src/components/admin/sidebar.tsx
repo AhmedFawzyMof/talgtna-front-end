@@ -78,6 +78,12 @@ const items = [
     badge: false,
   },
   {
+    title: "الاقسام الفرعية",
+    href: "/admin/dashboard/subcategories",
+    icon: LayoutList,
+    badge: false,
+  },
+  {
     title: "طلبات التواصل",
     href: "/admin/dashboard/contact",
     icon: Contact,
@@ -181,7 +187,7 @@ export default function Sidebar() {
           <SheetTitle>
             <Link
               to="/admin/dashboard"
-              className="flex items-center gap-2 px-2 py-4 mb-6"
+              className="flex items-center gap-2 px-2"
             >
               <Home className="h-6 w-6" />
               <span className="font-bold text-xl">تالجنا</span>

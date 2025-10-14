@@ -55,6 +55,13 @@ export interface Company {
   soon: boolean;
 }
 
+export interface SubCategory {
+  id: number;
+  name: string;
+  image: string;
+  category: number;
+}
+
 export interface Category {
   id: number;
   name: string;

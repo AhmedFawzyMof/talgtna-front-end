@@ -38,6 +38,7 @@ import Privacy from "@/views/Privacy";
 import AdminCoupons from "@/views/admin/coupons";
 import Footer from "@/components/Footer";
 import CreateOrder from "@/views/admin/createorder";
+import SubCategory from "@/views/admin/sub_category";
 
 function Layout() {
   const authStore = useAuthStore((state) => state);
@@ -108,6 +109,10 @@ export const routes = [
       {
         path: "categories",
         element: <Categories />,
+      },
+      {
+        path: "subcategories",
+        element: <SubCategory />,
       },
       {
         path: "contact",
